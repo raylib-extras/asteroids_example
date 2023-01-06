@@ -51,8 +51,8 @@ void ApplyOverlayCameraEffects(Camera2D& camera, bool turbo)
 	if (!turbo)
 		return;
 
-	camera.offset.x += sinf(float(GetCurrentTime() * 90)) * 2;
-	camera.offset.y += sinf(float(GetCurrentTime() * 180)) * 2;
+	camera.offset.x += sinf(float(GetCurrentTime() * 90)) * 1;
+	camera.offset.y += sinf(float(GetCurrentTime() * 180)) * 1;
 }
 
 int main ()
@@ -65,19 +65,20 @@ int main ()
 	Sprites::Init();
 
 	Camera2D worldCamera = { 0 };
-	worldCamera.zoom = 0.25f;
+	worldCamera.zoom = 0.5f;
 	worldCamera.offset = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
 
 	Camera2D overlayCamera = { 0 };
 	overlayCamera.zoom = 1.0f;
 
-	Background = LoadTexture("resources/blue.png");
+	Background = LoadTexture("resources/darkPurple.png");
 
 	World world;
-	int level = 1;
 
-	GameState = GameStates::Playing;
-	world.Reset(level);
+	GameState = GameStates::Menu;
+	world.PlayerShip.Reset();
+	world.PlayerShip.Alive = false;
+	world.Reset(100);
 
 	// game loop
 	while (!WindowShouldClose())
@@ -102,7 +103,7 @@ int main ()
 
 		worldCamera.target = world.PlayerShip.Position;
 
-		ApplyViewCameraEffects(worldCamera, world.PlayerShip.Turbo);
+		ApplyViewCameraEffects(worldCamera, world.PlayerShip.Boost);
 
 		// drawing
 		BeginDrawing();
@@ -116,7 +117,7 @@ int main ()
 
 		EndMode2D();
 		
-		ApplyOverlayCameraEffects(overlayCamera, world.PlayerShip.Turbo);
+		ApplyOverlayCameraEffects(overlayCamera, world.PlayerShip.Boost);
 		BeginMode2D(overlayCamera);
 		DrawOverlay();
 		EndMode2D();

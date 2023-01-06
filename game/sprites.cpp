@@ -1,52 +1,182 @@
 #include "sprites.h"
 #include "raymath.h"
 
+
 namespace Sprites
 {
-	Texture SpriteSheet = { 0 };
-	Texture RadarRing = { 0 };
-	std::vector<Rectangle> AsteroidSprites;
-	Rectangle ShipSprite = { 6 * 128, 0 * 128 , 128, 128 };
-	Rectangle ShotSprite = { 7 * 128, 3 * 128, 128, 128 };
-	Rectangle ThrustSprite = { 7 * 128, 5 * 128, 128, 128 };
-	Rectangle TurboThustSprite = { 6 * 128, 5 * 128, 128, 128 };
-	Rectangle ParticleSprite = { 4 * 128, 3 * 128, 128, 128 };
+	std::vector<Texture> SpriteSheets;
+	std::vector<SpriteFrame> Frames;
+	std::vector<size_t> AsteroidSprites;
+
+	size_t ShipSprite = 0;
+	size_t ShotSprite = 0;
+	size_t ThrustSprite = 0;
+	size_t TurboThustSprite = 0;
+	size_t ParticleSprite = 0;
+
+	// UI
+	size_t MiniMapSprite = 0;
+	size_t ShieldIcon = 0;
+	size_t BoostIcon = 0;
+
+	size_t ShieldBar = 0;
+	size_t BoostBar = 0;
+
+	size_t ShieldProgress = 0;
+	size_t BoostProgress = 0;
+
+	size_t ShieldHitBase = 0;
+	size_t ShieldHitMid = 0;
+	size_t ShieldHitEnd = 0;
+
+	size_t AddFrame(size_t sheetId, float x, float y, float w, float h)
+	{
+		Frames.emplace_back(SpriteFrame{ sheetId, Rectangle{x,y,w,h} });
+		return Frames.size() - 1;
+	}
+
+	size_t AddTexture(const char* name)
+	{
+		Texture tx = LoadTexture(name);
+		GenTextureMipmaps(&tx);
+		SetTextureFilter(tx, TEXTURE_FILTER_TRILINEAR);
+
+		SpriteSheets.push_back(tx);
+
+		return SpriteSheets.size() - 1;
+	}
 
 	void Init()
 	{
-		RadarRing = LoadTexture("resources/mini-map-ring.png");
-		SpriteSheet = LoadTexture("resources/simpleSpace_tilesheet@2.png");
-		GenTextureMipmaps(&SpriteSheet);
-		SetTextureFilter(SpriteSheet, TEXTURE_FILTER_TRILINEAR);
+		AddTexture("resources/sheet.png");
+		AddTexture("resources/interfacePack_sheet@2.png");
+	
+		ShipSprite = AddFrame(0, 224, 832, 99, 75);
+		ShotSprite = AddFrame(0, 843, 977, 13, 37);
+		ThrustSprite = AddFrame(0, 812, 206, 16, 40);
+		TurboThustSprite = AddFrame(0, 827, 867, 16, 39);
+		ParticleSprite = AddFrame(0, 364, 814, 18, 18);
 
-		AsteroidSprites.push_back(Rectangle{ 0 * 128, 3 * 128, 128, 128 });
-		AsteroidSprites.push_back(Rectangle{ 2 * 128, 3 * 128, 128, 128 });
-		AsteroidSprites.push_back(Rectangle{ 0 * 128, 4 * 128, 128, 128 });
-		AsteroidSprites.push_back(Rectangle{ 2 * 128, 4 * 128, 128, 128 });
+		MiniMapSprite = AddFrame(1, 0, 344, 272, 272);
+		
+		ShieldIcon = AddFrame(0, 482, 325, 34, 33);
+		BoostIcon = AddFrame(0, 539, 989, 34, 33);
+		BoostBar = AddFrame(0, 0, 78, 222, 39);
+		ShieldBar = AddFrame(0, 0, 39, 222, 39);
+
+		ShieldProgress = AddFrame(0, 774, 761, 34, 33);
+		Frames[ShieldProgress].Borders = Rectangle{12,12,22,21};
+
+		BoostProgress = AddFrame(0, 696, 329, 34, 33);
+		Frames[BoostProgress].Borders = Rectangle{ 12,12,22,21 };
+
+		ShieldHitEnd = AddFrame(0, 0, 412, 133, 108);
+		ShieldHitMid = AddFrame(0, 0, 293, 143, 119);
+		ShieldHitBase = AddFrame(0, 0, 156, 144, 137);
+
+		AsteroidSprites.push_back(AddFrame(0, 224, 664, 101, 84));
+		AsteroidSprites.push_back(AddFrame(0, 0, 520, 120, 98));
+		AsteroidSprites.push_back(AddFrame(0, 518, 810, 89, 82));
+		AsteroidSprites.push_back(AddFrame(0, 327, 452, 98, 96));
+		AsteroidSprites.push_back(AddFrame(0, 651, 447, 43, 43));
+		AsteroidSprites.push_back(AddFrame(0, 237, 452, 45, 40));
+		AsteroidSprites.push_back(AddFrame(0, 406, 234, 28, 28));
+		AsteroidSprites.push_back(AddFrame(0, 778, 587, 29, 26));
+		AsteroidSprites.push_back(AddFrame(0, 224, 748, 101, 84));
+		AsteroidSprites.push_back(AddFrame(0, 0, 618, 120, 98));
+		AsteroidSprites.push_back(AddFrame(0, 516, 728, 89, 82));
+		AsteroidSprites.push_back(AddFrame(0, 327, 548, 98, 96));
+		AsteroidSprites.push_back(AddFrame(0, 674, 219, 43, 43));
+		AsteroidSprites.push_back(AddFrame(0, 282, 452, 45, 40));
+		AsteroidSprites.push_back(AddFrame(0, 406, 262, 28, 28));
+		AsteroidSprites.push_back(AddFrame(0, 396, 413, 29, 26));
 	}
 
 	void Shutdown()
 	{
-		UnloadTexture(RadarRing);
-		UnloadTexture(SpriteSheet);
-		SpriteSheet.id = 0;
+		for (auto& sheet : SpriteSheets)
+			UnloadTexture(sheet);
+
+		SpriteSheets.clear();
 	}
 
-	void Draw(Rectangle frame, Vector2 pos, float rotation, float size, Color tint)
+	void Draw(size_t frameId, const Vector2& pos, float rotation, float size, Color tint, const Vector2& centerOffset)
 	{
-		Rectangle dest = { pos.x, pos.y, frame.width,frame.height };
-		Vector2 center = { frame.width / 2.0f, frame.height / 2.0f };
+		Draw(frameId, pos, rotation, Vector2{ size,size }, tint, centerOffset);
+	}
 
-		if (size > 0)
+	void Draw(size_t frameId, const Vector2& pos, float rotation, const Vector2& size, Color tint, const Vector2& centerOffset)
+	{
+		const SpriteFrame& frame = Frames[frameId];
+
+		Rectangle dest = { pos.x, pos.y, frame.Frame.width,frame.Frame.height };
+		Vector2 center = { frame.Frame.width / 2.0f + centerOffset.x, frame.Frame.height / 2.0f + centerOffset.y };
+
+		if (size.x > 0)
 		{
-			dest.width = dest.height = size;
-			center.x = center.y = size * 0.5f;
+			float aspect = dest.height / dest.width;
+			dest.width = size.x;
+			dest.height = size.y * aspect;
+			center.x = size.x * 0.5f + centerOffset.x;
+			center.y = size.y * 0.5f + centerOffset.y;
+		}
+		DrawTexturePro(SpriteSheets[frame.Sheet], frame.Frame, dest, center, rotation, tint);
+	}
+
+	void DrawJustfied(size_t frameId, Vector2 pos, Justifications hJustification, Justifications vJustitification, const Vector2& size, Color tint)
+	{
+		const SpriteFrame& frame = Frames[frameId];
+
+		Rectangle dest = { pos.x, pos.y, frame.Frame.width,frame.Frame.height };
+
+		if (size.x > 0)
+		{
+			dest.width = size.x;
+			dest.height = size.y;
 		}
 
-		DrawTexturePro(SpriteSheet, frame, dest, center, rotation, tint);
+		switch (hJustification)
+		{
+			default:
+				break;
+			case Sprites::Justifications::Center:
+				dest.x -= dest.width * 0.5f;
+				break;
+			case Sprites::Justifications::Max:
+				dest.x -= dest.width;
+				break;
+		}
+
+		switch (vJustitification)
+		{
+			default:
+				break;
+			case Sprites::Justifications::Center:
+				dest.y -= dest.height * 0.5f;
+				break;
+			case Sprites::Justifications::Max:
+				dest.y -= dest.height;
+				break;
+		}
+
+		if (frame.Borders.x > 0)
+		{
+			NPatchInfo info;
+			info.source = frame.Frame;
+			info.layout = NPATCH_NINE_PATCH;
+			info.left = int(frame.Borders.x);
+			info.right = int(frame.Frame.width - frame.Borders.width);
+			info.top = int(frame.Borders.y);
+			info.bottom = int(frame.Frame.height - frame.Borders.height);
+
+			DrawTextureNPatch(SpriteSheets[frame.Sheet], info, dest, Vector2Zero(), 0, tint);
+			return;
+		}
+
+		DrawTexturePro(SpriteSheets[frame.Sheet], frame.Frame, dest, Vector2Zero(), 0, tint);
 	}
 
-	Rectangle GetRandomAsteroid()
+	size_t GetRandomAsteroid()
 	{
 		return AsteroidSprites[GetRandomValue(0, (int)AsteroidSprites.size() - 1)];
 	}

@@ -3,6 +3,8 @@
 #include "common.h"
 #include "world.h"
 
+constexpr float MaxLife = 5;
+
 Bullet::Bullet()
 {
 	Radius = 10;
@@ -13,8 +15,7 @@ void Bullet::Draw() const
 	if (!Alive)
 		return;
 
-	Sprites::Draw(Sprites::ShotSprite, Position, Orientation, -1, Tint);
-
+	Sprites::Draw(Sprites::ShotSprite, Position, Orientation, -1, ColorAlpha(Tint, Lifetime/ MaxLife));
 }
 
 void Bullet::Update()
@@ -30,7 +31,7 @@ void Bullet::Update()
 	Entity::Update();
 }
 
-void Bullet::Create(const Vector2& pos, const Vector2& velocity)
+void Bullet::Create(const Vector2& pos, const Vector2& velocity, float orientation)
 {
 	Bullet* slot = nullptr;
 	// find an empty shot
@@ -53,8 +54,8 @@ void Bullet::Create(const Vector2& pos, const Vector2& velocity)
 	slot->Alive = true;
 	slot->Position = pos;
 	slot->Velocity = velocity;
-	slot->Orientation = 0;
-	slot->RotationalVelocity = (float)GetRandomValue(20, 1000);
-	slot->Lifetime = 5;
+	slot->Orientation = orientation;
+//	slot->RotationalVelocity = (float)GetRandomValue(20, 1000);
+	slot->Lifetime = MaxLife;
 	slot->Tint = RED;
 }

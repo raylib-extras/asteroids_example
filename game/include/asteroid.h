@@ -5,7 +5,7 @@
 class Asteroid : public Entity
 {
 public:
-	Rectangle Sprite = { 0 };
+	size_t Sprite = 0;
 
 	Color Tint = WHITE;
 

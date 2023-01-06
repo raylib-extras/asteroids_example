@@ -36,7 +36,7 @@ void Explosion::Update()
 		particle.Update();
 }
 
-void Explosion::Create(const Vector2& pos)
+void Explosion::Create(const Vector2& pos, float size)
 {
 	Explosion* slot = nullptr;
 	// find an empty shot
@@ -66,6 +66,10 @@ void Explosion::Create(const Vector2& pos)
 	slot->Particles.clear();
 
 	int particles = GetRandomValue(3, 8);
+
+	int add = size / 3.0f;
+	particles += add;
+
 	for (int i = 0; i < particles; i++)
 	{
 		Entity particle;
@@ -74,7 +78,7 @@ void Explosion::Create(const Vector2& pos)
 		particle.RotationalVelocity = (float)GetRandomValue(180, 720);
 
 		float randomAngle = (float)GetRandomValue(-180, 180) * DEG2RAD;
-		float randomSpeed = (float)GetRandomValue(500, 2000);
+		float randomSpeed = (float)GetRandomValue(20, 500);
 
 		particle.Velocity = Vector2{ cosf(randomAngle) * randomSpeed, sinf(randomAngle) * randomSpeed };
 

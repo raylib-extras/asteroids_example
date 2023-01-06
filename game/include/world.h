@@ -22,10 +22,15 @@ public:
 
 	void Update();
 
-	void Draw();
+	void Draw() const;
 
 	std::vector<Asteroid> Asteroids;
 	std::vector<Bullet> Bullets;
 	std::vector<Explosion> Explosions;
 	Player PlayerShip;
+
+	bool IsLevelClear() const { return LevelClear; }
+
+protected:
+	bool LevelClear = false;
 };

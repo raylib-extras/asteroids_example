@@ -22,6 +22,6 @@ void Entity::Update()
 
 bool Entity::Collide(const Entity& other)
 {
-	return Alive && CheckCollisionCircles(Position, Radius, other.Position, other.Radius);
+	return other.Alive && Alive && CheckCollisionCircles(Position, Radius, other.Position, other.Radius);
 }
 

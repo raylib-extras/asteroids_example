@@ -14,5 +14,5 @@ public:
 
 	void Update() override;
 
-	static void Create(const Vector2& pos, const Vector2& velocity);
+	static void Create(const Vector2& pos, const Vector2& velocity, float orientation);
 };

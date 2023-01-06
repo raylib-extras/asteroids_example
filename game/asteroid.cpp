@@ -32,16 +32,16 @@ bool Asteroid::Collide(const Entity& other)
 		float speed = Vector2Length(Velocity);
 
 		// make two new asteroids
-		Vector2 newPos = Vector2Add(Position, Vector2Scale(newVector, split1Radius * 1.5f));
+		Vector2 newPos = Vector2Add(Position, Vector2Scale(newVector, split1Radius * 0.25f));
 		Create(split1Radius, newPos, Vector2Scale(newVector, GetRandomValueF(speed + 20, speed + 80)));
 
 		newVector = Vector2Scale(newVector, -1);
-		newPos = Vector2Add(Position, Vector2Scale(newVector, split2Radius * 1.25f));
+		newPos = Vector2Add(Position, Vector2Scale(newVector, split2Radius * 0.25f));
 		Create(split2Radius, newPos, Vector2Scale(newVector, GetRandomValueF(speed + 20, speed + 80)));
 
 		World::Instance->PlayerShip.Score += 1;
 
-		Explosion::Create(Position);
+		Explosion::Create(Position, Radius);
 
 		Alive = false;
 	}
@@ -80,7 +80,7 @@ void Asteroid::Create(float radius, const Vector2& pos, const Vector2& velocity)
 	slot->Velocity = velocity;
 	slot->RotationalVelocity = (float)GetRandomValue(-90, 90);
 
-	slot->Tint = Sprites::ColorLerp(DARKBROWN, BEIGE, GetRandomValueF(0, 1));
+	slot->Tint = WHITE;// Sprites::ColorLerp(DARKBROWN, BEIGE, GetRandomValueF(0, 1));
 
 	slot->Sprite = Sprites::GetRandomAsteroid();
 }

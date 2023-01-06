@@ -10,7 +10,7 @@ public:
 
 	void Update() override;
 
-	static void Create(const Vector2& pos);
+	static void Create(const Vector2& pos, float size);
 
 protected:
 	Color Tint = WHITE;
