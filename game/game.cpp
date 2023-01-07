@@ -2,8 +2,11 @@
 #include "common.h"
 #include "world.h"
 #include "sprites.h"
+#include "sounds.h"
 
 #include <cmath>
+
+constexpr char Version[] = "Ver 0.0.2.01072023a Copyright 2023 Jeffery Myers";
 
 constexpr float LevelChangeTime = 10;
 
@@ -86,7 +89,9 @@ void UpdateGame()
 	{
 		if (!World::Instance->PlayerShip.Alive)
 		{
+			Sounds::PlaySoundEffect(Sounds::GameOver);
 			GameState = GameStates::GameOver;
+			Sounds::SetThrustState(false, false);
 		}
 		else if(World::Instance->IsLevelClear())
 		{
@@ -100,7 +105,6 @@ void UpdateGame()
 void DrawCenteredText(const char* text, float textSize = 20, float yOffset = 0.5f, float xOffset = 0.5f)
 {
 	Vector2 size = MeasureTextEx(GetFontDefault(), text, textSize, textSize / 10);
-
 
 	Vector2 pos = { GetDisplaySize().x * xOffset - size.x / 2.0f, GetDisplaySize().y * yOffset - size.y / 2.0f };
 	DrawText(text, int(pos.x), int(pos.y), int(textSize), WHITE);
@@ -239,7 +243,11 @@ void DrawMenu()
 		GameState = GameStates::Playing;
 		World::Instance->PlayerShip.Reset();
 		World::Instance->Reset(Level);
+
+		Sounds::PlaySoundEffect(Sounds::Begin);
 	}
+
+	DrawText(Version, 0, 0, 20, GRAY);
 }
 
 void DrawOverlay()

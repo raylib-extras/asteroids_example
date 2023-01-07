@@ -96,11 +96,11 @@ int main ()
 
 		Rectangle screen = { 0,0,  center.x*2,  center.y*2 };
 		Vector2 screenOriginInWorld = GetScreenToWorld2D(Vector2Zero(), worldCamera);
-		Vector2 screenEdgeInWorld = GetScreenToWorld2D(Vector2{ screen.width,screen.height }, worldCamera);
+		Vector2 screenEdgeInWorld = GetScreenToWorld2D(Vector2{ screen.width, screen.height }, worldCamera);
 		Rectangle screenInWorld = Rectangle{ screenOriginInWorld.x, screenOriginInWorld.y, screenEdgeInWorld.x - screenOriginInWorld.x,screenEdgeInWorld.y - screenOriginInWorld.y };
 
 		float bgScale = 0.5f;
-		Rectangle sourceRect = Rectangle{ screenInWorld.x * bgScale, screenInWorld.y * bgScale, screenInWorld.width * bgScale, screenInWorld.width * bgScale };
+		Rectangle sourceRect = Rectangle{ screenInWorld.x * bgScale, screenInWorld.y * bgScale, screenInWorld.width * bgScale, screenInWorld.height * bgScale };
 		DrawTexturePro(Background, sourceRect, screenInWorld, Vector2Zero(), 0, WHITE);
 
 		world.Draw(screenInWorld);

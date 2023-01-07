@@ -88,7 +88,10 @@ void World::Update()
 
 void World::Draw(Rectangle& screenInWorld) const
 {
-	DrawRectangleLinesEx(Bounds, 40, SKYBLUE);
+	float thickness = 30 + sinf(GetTime() * 10) * 10;
+	Rectangle bounds = { Bounds.x - thickness, Bounds.y - thickness, Bounds.width + thickness * 2, Bounds.height + thickness + 2 };
+	DrawRectangleLinesEx(bounds, thickness, SKYBLUE);
+	DrawRectangleLinesEx(bounds, thickness/3, WHITE);
 
 	float viewRadSq = powf(screenInWorld.width * 0.65f, 2) + powf(screenInWorld.height * 0.65f, 2);
 

@@ -9,6 +9,7 @@
 
 constexpr float BaseReloadTime = 0.5f;
 constexpr float ShieldHitMaxLife = 0.35f;
+constexpr float BreakingFriction = 10;
 
 Player::Player()
 {
@@ -61,9 +62,9 @@ void Player::Update()
 	if (!Alive)
 		return;
 
-	Shield += GetDeltaTime() * 2;
-	if (Shield > 1000)
-		Shield = 1000;
+	Shield += GetDeltaTime() * ShieldRecharge;
+	if (Shield > MaxShield)
+		Shield = MaxShield;
 
 	// TODO, game pad support
 
@@ -74,7 +75,7 @@ void Player::Update()
 
 	if (!wantBoost)
 		Boost = false;
-	else if (wantBoost && Power > 250)
+	else if (wantBoost && Power > MaxPower / 4)
 		Boost = true;
 	else if (Power <= 1)
 		Boost = false;
@@ -83,15 +84,15 @@ void Player::Update()
 	{
 		Power -= GetDeltaTime() * 400;
 	}
-	else if (Power < 1000)
+	else if (Power < MaxPower)
 	{
 		Power += GetDeltaTime() * 20;
 	}
 
 	if (Power < 0)
 		Power = 0;
-	if (Power > 1000)
-		Power = 1000;
+	if (Power > MaxPower)
+		Power = MaxPower;
 
 	Reload -= GetDeltaTime() * ShotSpeedMultiplyer;
 
@@ -106,10 +107,10 @@ void Player::Update()
 
 	Vector2 shipVector = Vector2{ sinf(Orientation * DEG2RAD), -cosf(Orientation * DEG2RAD) };
 
-	float speed = 30 + GetDeltaTime();
+	float speed = MaxThrust * GetDeltaTime();
 
 	if (Boost)
-		speed *= 3;
+		speed *= BoostMultiplyer;
 
 	if (wantThrust)
 	{
@@ -119,7 +120,7 @@ void Player::Update()
 
 	float frictionScale = 1;
 	if (IsKeyDown(KEY_S))
-		frictionScale = 30;
+		frictionScale *= BreakingFriction;
 
 	Vector2 normVel = Vector2Normalize(Velocity);
 	Vector2 friction = Vector2Scale(normVel, -90.0f * frictionScale * GetFrameTime());
@@ -166,7 +167,11 @@ bool Player::Collide(const Entity& other)
 	{
 		Explosion::Create(other.Position, other.Radius);
 
-		Shield -= other.Radius / 1.0f;
+		float damageFactor = 1.0f;
+		if (Boost)
+			damageFactor = 3.0f;
+
+		Shield -= other.Radius * damageFactor;
 
 		Sounds::PlaySoundEffect(Sounds::SheldHit);
 
@@ -195,6 +200,9 @@ void Player::Reset()
 	Score = 0;
 	Power = MaxPower;
 	Shield = MaxShield;
+	BoostMultiplyer = NominalBoostMultiplyer;
+	MaxThrust = NominalThrust;
+	ShieldRecharge = NominalShieldRecharge;
 	Respawn();
 }
 

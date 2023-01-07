@@ -6,7 +6,10 @@ class Player : public Entity
 {
 public:
 	static constexpr float NominalShield = 1000;
+	static constexpr float NominalShieldRecharge = 2;
 	static constexpr float NominalPower = 1000;
+	static constexpr float NominalThrust = 400;
+	static constexpr float NominalBoostMultiplyer = 3;
 
 	float Reload = 0;
 
@@ -20,6 +23,11 @@ public:
 
 	float MaxPower = NominalPower;
 	float Power = MaxPower;
+
+	float MaxThrust = NominalThrust;
+	float BoostMultiplyer = NominalBoostMultiplyer;
+
+	float ShieldRecharge = NominalShieldRecharge;
 
 	Player();
 	void Draw() const override;

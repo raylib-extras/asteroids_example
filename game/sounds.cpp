@@ -2,8 +2,6 @@
 
 #include <vector>
 
-
-
 namespace Sounds
 {
 	std::vector<Sound> Effects;
@@ -16,6 +14,10 @@ namespace Sounds
 	size_t Destoryed = 0;
 	size_t SheldHit = 0;
 	size_t Shot = 0;
+	size_t Upgrade = 0;
+
+	size_t GameOver = 0;
+	size_t Begin = 0;
 
 	size_t AddEffect(const char* name)
 	{
@@ -28,9 +30,11 @@ namespace Sounds
 		InitAudioDevice();
 		BGM = LoadMusicStream("bgm.ogg");
 		BGM.looping = true;
+		SetMusicVolume(BGM, 0.25f);
 
 		Thrust = LoadMusicStream("thruster.ogg");
 		Thrust.looping = true;
+		SetMusicVolume(Thrust, 1.0f);
 
 		Boost = LoadMusicStream("boost.ogg");
 		Boost.looping = true;
@@ -39,6 +43,9 @@ namespace Sounds
 		Destoryed = AddEffect("destoryed.ogg");
 		SheldHit = AddEffect("shield_hit.ogg");
 		Shot = AddEffect("shot.ogg");
+		Upgrade = AddEffect("upgrade.ogg");
+		GameOver = AddEffect("game_over.ogg");
+		Begin = AddEffect("begin.ogg");
 	}
 
 	void Shutdown()
@@ -115,6 +122,6 @@ namespace Sounds
 	void PlaySoundEffect(size_t effect)
 	{
 		if (effect <= Effects.size())
-			PlaySound(Effects[effect]);
+			PlaySoundMulti(Effects[effect]);
 	}
 }

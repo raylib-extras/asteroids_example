@@ -2,6 +2,7 @@
 #include "world.h"
 #include "common.h"
 #include "sprites.h"
+#include "sounds.h"
 
 constexpr float PowerupRadius = 55;
 
@@ -34,18 +35,25 @@ bool PowerUp::Collide(const Entity& other)
 {
 	if (Entity::Collide(other))
 	{
+		Sounds::PlaySoundEffect(Sounds::Upgrade);
+
+		Player& player = World::Instance->PlayerShip;
 		switch (Type)
 		{
 			case PowerUp::PowerType::Shot:
-				World::Instance->PlayerShip.ShotSpeedMultiplyer += 0.25f;
+				player.ShotSpeedMultiplyer += 0.10f;
 				break;
 
 			case PowerUp::PowerType::Shield:
-				World::Instance->PlayerShip.Shield += World::Instance->PlayerShip.MaxShield / 8.0f;
+				player.Shield += World::Instance->PlayerShip.MaxShield / 8.0f;
+				player.ShieldRecharge += player.NominalShieldRecharge;
+
 				break;
 
 			case PowerUp::PowerType::Boost:
-				World::Instance->PlayerShip.Power += World::Instance->PlayerShip.MaxPower / 4.0f;
+				player.Power += World::Instance->PlayerShip.MaxPower / 4.0f;
+				player.BoostMultiplyer += 0.1;
+				player.MaxThrust += player.NominalThrust * 0.25f;
 				break;
 		}
 
