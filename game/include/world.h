@@ -22,7 +22,7 @@ public:
 
 	void Update();
 
-	void Draw() const;
+	void Draw(Rectangle& screenInWorld) const;
 
 	std::vector<Asteroid> Asteroids;
 	std::vector<Bullet> Bullets;
@@ -30,6 +30,8 @@ public:
 	Player PlayerShip;
 
 	bool IsLevelClear() const { return LevelClear; }
+
+	bool BounceBounds(Entity& entity);
 
 protected:
 	bool LevelClear = false;

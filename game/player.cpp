@@ -4,6 +4,8 @@
 #include "common.h"
 #include "bullet.h"
 #include "explosion.h"
+#include "world.h"
+#include "sounds.h"
 
 constexpr float BaseReloadTime = 0.25f;
 constexpr float ShieldHitMaxLife = 0.35f;
@@ -17,12 +19,12 @@ void Player::Draw() const
 {
 	if (Thrusting && Alive)
 	{
-		float sizeOffset = cosf((float)GetTime() * 20) * 3 + (Radius*1.5f);
-		Vector2 offset = { 0, -sizeOffset * 0.6f };
+		float sizeOffset = cosf((float)GetTime() * 20) * 3 + (Radius*1.2f);
+		Vector2 offset = { 0, -sizeOffset * 0.5f };
 
 		size_t sprite = Boost ? Sprites::TurboThustSprite : Sprites::ThrustSprite;
 
-		Sprites::Draw(sprite, Position, Orientation, Vector2{Radius*0.35f, sizeOffset}, WHITE, offset);
+		Sprites::Draw(sprite, Position, Orientation, Vector2{Radius*0.45f, sizeOffset}, WHITE, offset);
 	}
 
 	if (Alive)
@@ -131,6 +133,8 @@ void Player::Update()
 
 	Position = Vector2Add(Position, Vector2Scale(Velocity, GetDeltaTime()));
 
+	World::Instance->BounceBounds(*this);
+
 	// normalize angle
 	while (Orientation > 180)
 		Orientation -= 360;
@@ -148,7 +152,11 @@ void Player::Update()
 
 		Vector2 shotVel = Vector2Add(Velocity, Vector2Scale(shipVector, 1500));
 		Bullet::Create(shotPos, shotVel, Orientation);
+
+		Sounds::PlaySoundEffect(Sounds::Shot);
 	}
+
+	Sounds::SetThrustState(Thrusting, Boost);
 }
 
 bool Player::Collide(const Entity& other)
@@ -159,6 +167,8 @@ bool Player::Collide(const Entity& other)
 
 		Shield -= other.Radius / 1.0f;
 
+		Sounds::PlaySoundEffect(Sounds::SheldHit);
+
 		ShieldHitLifetime = ShieldHitMaxLife;
 
 		Vector2 vectToHit = Vector2Subtract(other.Position, Position);
@@ -168,6 +178,8 @@ bool Player::Collide(const Entity& other)
 		{
 			Explosion::Create(Position, 500);
 			Alive = false;
+
+			Sounds::PlaySoundEffect(Sounds::Destoryed);
 		}
 
 		return true;
@@ -189,7 +201,9 @@ void Player::Respawn()
 {
 	Boost = false;
 	Thrusting = false;
+	Sounds::SetThrustState(Thrusting, Boost);
 
+	Velocity = Vector2{ 0,0 };
 	Position = Vector2{ 0,0 };
 	Orientation = 0;
 	Reload = 0;

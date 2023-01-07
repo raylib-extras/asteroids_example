@@ -9,6 +9,7 @@ public:
 
 	Color Tint = WHITE;
 
+	void Update() override;
 	void Draw() const override;
 
 	bool Collide(const Entity& other) override;

@@ -54,7 +54,7 @@ namespace Sprites
 		ShipSprite = AddFrame(0, 224, 832, 99, 75);
 		ShotSprite = AddFrame(0, 843, 977, 13, 37);
 		ThrustSprite = AddFrame(0, 812, 206, 16, 40);
-		TurboThustSprite = AddFrame(0, 827, 867, 16, 39);
+		TurboThustSprite = AddFrame(0, 827, 867, 16, 38);
 		ParticleSprite = AddFrame(0, 364, 814, 18, 18);
 
 		MiniMapSprite = AddFrame(1, 0, 344, 272, 272);

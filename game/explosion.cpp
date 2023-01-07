@@ -67,7 +67,7 @@ void Explosion::Create(const Vector2& pos, float size)
 
 	int particles = GetRandomValue(3, 8);
 
-	int add = size / 3.0f;
+	int add = int(size / 3.0f);
 	particles += add;
 
 	for (int i = 0; i < particles; i++)

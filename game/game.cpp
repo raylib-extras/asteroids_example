@@ -61,10 +61,48 @@ void UpdateGame()
 	}
 }
 
+void DrawCenteredText(const char* text, float textSize = 20, float yOffset = 0.5f, float xOffset = 0.5f)
+{
+	Vector2 size = MeasureTextEx(GetFontDefault(), text, textSize, textSize / 10);
+
+	Vector2 pos = { GetScreenWidth() * xOffset - size.x / 2.0f, GetScreenHeight() * yOffset - size.y / 2.0f };
+	DrawText(text, int(pos.x), int(pos.y), int(textSize), WHITE);
+}
+
+void DrawMiniMap()
+{
+	Vector2 center = { Sprites::Frames[Sprites::MiniMapSprite].Frame.width, Sprites::Frames[Sprites::MiniMapSprite].Frame.height };
+
+	float rad = center.x * 0.5f - 10;
+
+	center.x = GetScreenWidth() - (center.x / 2.0f);
+	center.y = center.y / 2.0f;
+
+	DrawCircleV(center, rad, ColorAlpha(BLACK, 0.75f));
+
+	DrawCircleV(center, 5, WHITE);
+
+	float viewDist = 3000;
+
+	float viewScale = rad / viewDist;
+	for (const auto& asteroid : World::Instance->Asteroids)
+	{
+		if (!asteroid.Alive || Vector2DistanceSqr(World::Instance->PlayerShip.Position, asteroid.Position) >= viewDist * viewDist)
+			continue;
+
+		Vector2 relPos = Vector2Subtract(asteroid.Position, World::Instance->PlayerShip.Position);
+		relPos = Vector2Scale(relPos, viewScale);
+		relPos = Vector2Add(relPos, center);
+
+		DrawCircleV(relPos, 2, BROWN);
+	}
+}
+
 void DrawGameHud()
 {
 	DrawText(TextFormat("Score %d", World::Instance->PlayerShip.Score), 0, 0, 40, BLUE);
 
+	DrawMiniMap();
 	Vector2 upperRight = { float(GetScreenWidth()),0 };
 	Sprites::DrawJustfied(Sprites::MiniMapSprite, upperRight, Sprites::Justifications::Max, Sprites::Justifications::Min);
 
@@ -85,7 +123,7 @@ void DrawGameHud()
 		Color c = WHITE;
 		if (boostFactor < 0.25f)
 		{
-			float flash = (sinf(GetTime() * 30) * 0.5f) + 0.5f;
+			float flash = (sinf((float)GetTime() * 30) * 0.5f) + 0.5f;
 			c = Sprites::ColorLerp(WHITE, GRAY, flash);
 		}
 		Sprites::DrawJustfied(Sprites::BoostProgress, Vector2{ center, 3 }, Sprites::Justifications::Max, Sprites::Justifications::Min, Vector2{ boostFactor * 222, 33 }, c);
@@ -98,7 +136,7 @@ void DrawGameHud()
 		Color c = WHITE;
 		if (shieldFactor < 0.25f)
 		{
-			float flash = (sinf(GetTime() * 30) * 0.5f) + 0.5f;
+			float flash = (sinf((float)GetTime() * 30) * 0.5f) + 0.5f;
 			c = Sprites::ColorLerp(WHITE, GRAY, flash);
 		}
 
@@ -108,42 +146,31 @@ void DrawGameHud()
 
 void DrawLevelChangeCountdown()
 {
-	const char* text = TextFormat("Level Clear, Next Level in %0.0f", std::ceilf(LevelChangeCountdown));
-	
-	int textSize = 30;
-	Vector2 size = MeasureTextEx(GetFontDefault(), text, textSize, textSize / 10);
-
-	Vector2 pos = { GetScreenWidth() / 2.0f - size.x / 2.0f, GetScreenHeight() / 2.0f - size.y / 2.0f };
-	DrawText(text, pos.x, pos.y, textSize, WHITE);
+	DrawCenteredText(TextFormat("Level Clear, Next Level in %0.0f", std::ceilf(LevelChangeCountdown)), 20, 0.25f);
 }
 
 void DrawGameOver()
 {
-	const char* text = TextFormat("Game Over, your score was %d, good job!", World::Instance->PlayerShip.Score);
-
-	int textSize = 30;
-	Vector2 size = MeasureTextEx(GetFontDefault(), text, textSize, textSize / 10);
-
-	Vector2 pos = { GetScreenWidth() / 2.0f - size.x / 2.0f, GetScreenHeight() / 2.0f - size.y / 2.0f };
-	DrawText(text, pos.x, pos.y, textSize, WHITE);
-
+	DrawCenteredText(TextFormat("Game Over, your score was %d, good job!", World::Instance->PlayerShip.Score), 20, 0.25f);
+	
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_SPACE))
 	{
 		GameState = GameStates::Menu;
-		World::Instance->Reset(500);
+		World::Instance->Reset(50);
 	}
 }
 
 void DrawMenu()
 {
-	const char* text = "Fasteroids++!, click or press space to play!";
+	DrawCenteredText("Fasteroids++!", 60, 0.125f);
 
-	int textSize = 30;
-	Vector2 size = MeasureTextEx(GetFontDefault(), text, textSize, textSize / 10);
+	DrawCenteredText("Click or press space to play!", 20, 0.25f);
 
-	Vector2 pos = { GetScreenWidth() / 2.0f - size.x / 2.0f, GetScreenHeight() / 2.0f - size.y / 2.0f };
-	DrawText(text, pos.x, pos.y, textSize, WHITE);
-
+	DrawCenteredText("Instructions", 20, 0.5f);
+	DrawCenteredText("Mouse to steer, W or right click to thrust", 20, 0.55f);
+	DrawCenteredText("Left Click or space to fire", 20, 0.6f);
+	DrawCenteredText("Shift + Thrust to Boost", 20, 0.65f);
+	
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_SPACE))
 	{
 		Level = 1;

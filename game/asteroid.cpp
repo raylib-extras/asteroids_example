@@ -2,7 +2,16 @@
 
 #include "sprites.h"
 #include "common.h"
+#include "sounds.h"
 #include "world.h"
+
+void Asteroid::Update()
+{
+	Entity::Update();
+	if (!Alive)
+		return;
+	World::Instance->BounceBounds(*this);
+}
 
 void Asteroid::Draw() const
 {
@@ -18,6 +27,8 @@ bool Asteroid::Collide(const Entity& other)
 
 	if (hit)
 	{
+		Sounds::PlaySoundEffect(Sounds::AsteroidHit);
+
 		float split1Radius = GetRandomValue(35, 75) / 100.0f;
 		float split2Radius = 1.0f - split1Radius;
 
@@ -53,8 +64,11 @@ void Asteroid::Create(float radius, const Vector2& pos, const Vector2& velocity)
 	// don't make an asteroid that is too small
 
 	if (radius < 40)
+	{
+		World::Instance->PlayerShip.Score += int(radius + 0.5f);
 		return;
-
+	}
+	
 	Asteroid* slot = nullptr;
 	// find an empty asteroid
 

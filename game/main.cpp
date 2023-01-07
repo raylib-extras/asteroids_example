@@ -14,26 +14,12 @@ Quick Asterpids in C++
 #include "game.h"
 #include "player.h"
 #include "sprites.h"
+#include "sounds.h"
 #include "world.h"
 
 #include <vector>
 
 Texture Background = { 0 };
-
-void DrawStarfield(const Camera2D& camera)
-{
-	Rectangle screen = { 0,0,  (float)GetScreenWidth(),  (float)GetScreenHeight() };
-
-	float bgScale = 0.5f;
-
-	Vector2 screenOriginInWorld = GetScreenToWorld2D(Vector2Zero(), camera);
-	Vector2 screenEdgeInWorld = GetScreenToWorld2D(Vector2{ screen.width,screen.height }, camera);
-
-	Rectangle screenInWorld = Rectangle{ screenOriginInWorld.x, screenOriginInWorld.y, screenEdgeInWorld.x - screenOriginInWorld.x,screenEdgeInWorld.y - screenOriginInWorld.y };
-
-	Rectangle sourceRect = Rectangle{ screenInWorld.x * bgScale, screenInWorld.y * bgScale, screenInWorld.width * bgScale, screenInWorld.width * bgScale };
-	DrawTexturePro(Background, sourceRect, screenInWorld, Vector2Zero(), 0, WHITE);
-}
 
 void ApplyViewCameraEffects(Camera2D& camera, bool turbo)
 {
@@ -51,8 +37,8 @@ void ApplyOverlayCameraEffects(Camera2D& camera, bool turbo)
 	if (!turbo)
 		return;
 
-	camera.offset.x += sinf(float(GetCurrentTime() * 90)) * 1;
-	camera.offset.y += sinf(float(GetCurrentTime() * 180)) * 1;
+	camera.offset.x += sinf(float(GetCurrentTime() * 90)) * 3;
+	camera.offset.y += sinf(float(GetCurrentTime() * 180)) * 3;
 }
 
 int main ()
@@ -61,6 +47,9 @@ int main ()
 	SetConfigFlags(FLAG_VSYNC_HINT);
 	InitWindow(1280, 800, "Fasteroids++");
 	SetFPSCap();
+
+	Sounds::Init();
+	SetMasterVolume(0.5f);
 
 	Sprites::Init();
 
@@ -78,26 +67,28 @@ int main ()
 	GameState = GameStates::Menu;
 	world.PlayerShip.Reset();
 	world.PlayerShip.Alive = false;
-	world.Reset(100);
+	world.Reset(50);
+
+	Sounds::StartBGM();
 
 	// game loop
 	while (!WindowShouldClose())
 	{
 		UpdateGame();
+		Sounds::Update();
 
 		if (IsKeyDown(KEY_EQUAL))
-		{
 			worldCamera.zoom += 0.125f * GetDeltaTime();
-
-			if (worldCamera.zoom > 1)
-				worldCamera.zoom = 1;
-		}
 		if (IsKeyDown(KEY_MINUS))
-		{
 			worldCamera.zoom -= 0.125f * GetDeltaTime();
-			if (worldCamera.zoom <= 0)
-				worldCamera.zoom = 0.125f;
-		}
+
+		worldCamera.zoom += GetMouseWheelMove() * 0.125f * GetDeltaTime();
+
+		if (worldCamera.zoom <= 0)
+			worldCamera.zoom = 0.25f;
+
+		if (worldCamera.zoom > 1)
+			worldCamera.zoom = 1;
 
 		world.Update();
 
@@ -111,9 +102,16 @@ int main ()
 
 		BeginMode2D(worldCamera);
 
-		DrawStarfield(worldCamera);
+		Rectangle screen = { 0,0,  (float)GetScreenWidth(),  (float)GetScreenHeight() };
+		Vector2 screenOriginInWorld = GetScreenToWorld2D(Vector2Zero(), worldCamera);
+		Vector2 screenEdgeInWorld = GetScreenToWorld2D(Vector2{ screen.width,screen.height }, worldCamera);
+		Rectangle screenInWorld = Rectangle{ screenOriginInWorld.x, screenOriginInWorld.y, screenEdgeInWorld.x - screenOriginInWorld.x,screenEdgeInWorld.y - screenOriginInWorld.y };
 
-		world.Draw();
+		float bgScale = 0.5f;
+		Rectangle sourceRect = Rectangle{ screenInWorld.x * bgScale, screenInWorld.y * bgScale, screenInWorld.width * bgScale, screenInWorld.width * bgScale };
+		DrawTexturePro(Background, sourceRect, screenInWorld, Vector2Zero(), 0, WHITE);
+
+		world.Draw(screenInWorld);
 
 		EndMode2D();
 		
@@ -127,6 +125,8 @@ int main ()
 
 	UnloadTexture(Background);
 	Sprites::Shutdown();
+
+	Sounds::Shutdown();
 
 	// cleanup
 	CloseWindow();
