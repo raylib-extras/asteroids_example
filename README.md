@@ -17,5 +17,11 @@ Code Comments
 Cleanup API to player
 Cleanup Camera Shake API (global shake state?)
 
+Menu for volume?
+Fullscreen Support
+Set working dir better
+
+Bins for major platforms
+
 ## Bugs
 Score goes up after you die
