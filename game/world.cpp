@@ -14,6 +14,9 @@ void World::Reset(int level)
 
 	PlayerShip.Respawn();
 
+	Bounds.x = Bounds.y = -3000 - (level * 500.0f);
+	Bounds.width = Bounds.height = -(Bounds.x * 2);
+
 	int count = 40 + (20 * level);
 	for (int i = 0; i < count; i++)
 	{
@@ -22,7 +25,7 @@ void World::Reset(int level)
 		while (Vector2DistanceSqr(PlayerShip.Position, pos) < safeRad* safeRad)
 			pos = GetRandomVector2(Bounds);
 
-		float velLimits = 50 + (25 * level);
+		float velLimits = 50 + (25.0f * level);
 		Vector2 Velocity = { GetRandomValueF(-velLimits,velLimits) ,GetRandomValueF(-velLimits,velLimits) };
 
 		Asteroid::Create(GetRandomValueF(40, 200), pos, Velocity);
@@ -67,6 +70,13 @@ void World::Update()
 	for (auto& exlosion : Explosions)
 		exlosion.Update();
 
+	for (auto& powerup : PowerUps)
+	{
+		powerup.Update();
+		if (powerup.Collide(PlayerShip))
+			powerup.Alive = false;
+	}
+
 	PlayerShip.Update();
 	
 	if (asteroidCount == 0)
@@ -87,6 +97,9 @@ void World::Draw(Rectangle& screenInWorld) const
 		if (asteroid.Alive && Vector2DistanceSqr(PlayerShip.Position,asteroid.Position) < viewRadSq + (powf(asteroid.Radius,2)))
 			asteroid.Draw();
 	}
+
+	for (auto& powerups : PowerUps)
+		powerups.Draw();
 
 	BeginBlendMode(BLEND_ADDITIVE);
 

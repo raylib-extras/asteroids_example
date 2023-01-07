@@ -2,11 +2,9 @@
 
 #include "entity.h"
 
-
 class Player : public Entity
 {
 public:
-
 	static constexpr float NominalShield = 1000;
 	static constexpr float NominalPower = 1000;
 
@@ -14,6 +12,8 @@ public:
 	int Score = 0;
 	bool Thrusting = false;
 	bool Boost = false;
+
+	float ShotSpeedMultiplyer = 1;
 
 	float MaxShield = NominalShield;
 	float Shield = MaxShield;

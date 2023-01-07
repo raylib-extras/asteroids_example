@@ -55,6 +55,9 @@ bool Asteroid::Collide(const Entity& other)
 		Explosion::Create(Position, Radius);
 
 		Alive = false;
+
+		if (GetRandomValue(0, 10) == 0)
+			PowerUp::Create(Position);
 	}
 	return hit;
 }

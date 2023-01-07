@@ -48,6 +48,8 @@ int main ()
 	InitWindow(1280, 800, "Fasteroids++");
 	SetFPSCap();
 
+	SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
+
 	Sounds::Init();
 	SetMasterVolume(0.5f);
 

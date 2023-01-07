@@ -29,6 +29,10 @@ namespace Sprites
 	size_t ShieldHitMid = 0;
 	size_t ShieldHitEnd = 0;
 
+	size_t ShieldPowerup = 0;
+	size_t BoostPowerup = 0;
+	size_t ShotPowerup = 0;
+
 	size_t AddFrame(size_t sheetId, float x, float y, float w, float h)
 	{
 		Frames.emplace_back(SpriteFrame{ sheetId, Rectangle{x,y,w,h} });
@@ -73,6 +77,10 @@ namespace Sprites
 		ShieldHitEnd = AddFrame(0, 0, 412, 133, 108);
 		ShieldHitMid = AddFrame(0, 0, 293, 143, 119);
 		ShieldHitBase = AddFrame(0, 0, 156, 144, 137);
+
+		ShieldPowerup = AddFrame(0, 222, 129, 22, 21);
+		BoostPowerup = AddFrame(0, 674, 262, 22, 21);
+		ShotPowerup = AddFrame(0, 222, 108, 22, 21);
 
 		AsteroidSprites.push_back(AddFrame(0, 224, 664, 101, 84));
 		AsteroidSprites.push_back(AddFrame(0, 0, 520, 120, 98));

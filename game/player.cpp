@@ -7,7 +7,7 @@
 #include "world.h"
 #include "sounds.h"
 
-constexpr float BaseReloadTime = 0.25f;
+constexpr float BaseReloadTime = 0.5f;
 constexpr float ShieldHitMaxLife = 0.35f;
 
 Player::Player()
@@ -82,17 +82,18 @@ void Player::Update()
 	if (Boost)
 	{
 		Power -= GetDeltaTime() * 400;
-		if (Power < 0)
-			Power = 0;
 	}
 	else if (Power < 1000)
 	{
 		Power += GetDeltaTime() * 20;
-		if (Power > 1000)
-			Power = 1000;
 	}
 
-	Reload -= GetDeltaTime();
+	if (Power < 0)
+		Power = 0;
+	if (Power > 1000)
+		Power = 1000;
+
+	Reload -= GetDeltaTime() * ShotSpeedMultiplyer;
 
 	float rotation = 270 * GetDeltaTime();
 

@@ -5,6 +5,7 @@
 #include "bullet.h"
 #include "explosion.h"
 #include "player.h"
+#include "powerup.h"
 
 #include <vector>
 
@@ -27,6 +28,7 @@ public:
 	std::vector<Asteroid> Asteroids;
 	std::vector<Bullet> Bullets;
 	std::vector<Explosion> Explosions;
+	std::vector<PowerUp> PowerUps;
 	Player PlayerShip;
 
 	bool IsLevelClear() const { return LevelClear; }

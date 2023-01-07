@@ -35,6 +35,10 @@ namespace Sprites
 	extern size_t ShieldHitMid;
 	extern size_t ShieldHitEnd;
 
+	extern size_t ShieldPowerup;
+	extern size_t BoostPowerup;
+	extern size_t ShotPowerup;
+
 	void Init();
 	void Shutdown();
 
