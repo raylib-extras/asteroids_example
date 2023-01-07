@@ -14,6 +14,7 @@ public:
 
 	PowerType Type = PowerType::Shot;
 
+	void Update() override;
 	void Draw() const override;
 
 	bool Collide(const Entity& other) override;

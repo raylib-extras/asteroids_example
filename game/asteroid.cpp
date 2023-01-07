@@ -50,7 +50,7 @@ bool Asteroid::Collide(const Entity& other)
 		newPos = Vector2Add(Position, Vector2Scale(newVector, split2Radius * 0.25f));
 		Create(split2Radius, newPos, Vector2Scale(newVector, GetRandomValueF(speed + 20, speed + 80)));
 
-		World::Instance->PlayerShip.Score += 1;
+		World::Instance->PlayerShip.AddScore(1);
 
 		Explosion::Create(Position, Radius);
 
@@ -68,7 +68,7 @@ void Asteroid::Create(float radius, const Vector2& pos, const Vector2& velocity)
 
 	if (radius < 40)
 	{
-		World::Instance->PlayerShip.Score += int(radius + 0.5f);
+		World::Instance->PlayerShip.AddScore(int(radius + 0.5f));
 		return;
 	}
 	

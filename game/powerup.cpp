@@ -5,6 +5,12 @@
 
 constexpr float PowerupRadius = 55;
 
+void PowerUp::Update()
+{
+	Entity::Update();
+	World::Instance->BounceBounds(*this);
+}
+
 void PowerUp::Draw() const
 {
 	if (!Alive)
@@ -31,11 +37,11 @@ bool PowerUp::Collide(const Entity& other)
 		switch (Type)
 		{
 			case PowerUp::PowerType::Shot:
-				World::Instance->PlayerShip.ShotSpeedMultiplyer += 1;
+				World::Instance->PlayerShip.ShotSpeedMultiplyer += 0.25f;
 				break;
 
 			case PowerUp::PowerType::Shield:
-				World::Instance->PlayerShip.Shield += World::Instance->PlayerShip.MaxShield / 4.0f;
+				World::Instance->PlayerShip.Shield += World::Instance->PlayerShip.MaxShield / 8.0f;
 				break;
 
 			case PowerUp::PowerType::Boost:

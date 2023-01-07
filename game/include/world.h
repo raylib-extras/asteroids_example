@@ -33,8 +33,13 @@ public:
 
 	bool IsLevelClear() const { return LevelClear; }
 
+	size_t GetActiveAsteroidCount() const { return ActiveAsteroidCount; }
+
 	bool BounceBounds(Entity& entity);
+
+	bool Shake() const { return PlayerShip.Alive && PlayerShip.Boost; }
 
 protected:
 	bool LevelClear = false;
+	size_t ActiveAsteroidCount = 0;
 };

@@ -9,19 +9,12 @@ Pre-Release, still a work in progress.
 
 ## TODO
 * UFO
-* Powerups?
 * Controller Support
-* Tell them how many asteroids are left
 
 * Code Comments
 * Cleanup API to player
-* Cleanup Camera Shake API (global shake state?)
 
 * Menu for volume?
-* Fullscreen Support
-* Set working dir better
-
 * Bins for major platforms
 
 ## Bugs
-* Score goes up after you die

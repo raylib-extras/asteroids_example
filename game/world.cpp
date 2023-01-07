@@ -11,13 +11,14 @@ void World::Reset(int level)
 	Asteroids.clear();
 	Bullets.clear();
 	Explosions.clear();
+	PowerUps.clear();
 
 	PlayerShip.Respawn();
 
 	Bounds.x = Bounds.y = -3000 - (level * 500.0f);
 	Bounds.width = Bounds.height = -(Bounds.x * 2);
 
-	int count = 40 + (20 * level);
+	int count = 50 + (40 * level);
 	for (int i = 0; i < count; i++)
 	{
 		Vector2 pos = GetRandomVector2(Bounds);
@@ -25,7 +26,7 @@ void World::Reset(int level)
 		while (Vector2DistanceSqr(PlayerShip.Position, pos) < safeRad* safeRad)
 			pos = GetRandomVector2(Bounds);
 
-		float velLimits = 50 + (25.0f * level);
+		float velLimits = 50 + (35.0f * level);
 		Vector2 Velocity = { GetRandomValueF(-velLimits,velLimits) ,GetRandomValueF(-velLimits,velLimits) };
 
 		Asteroid::Create(GetRandomValueF(40, 200), pos, Velocity);
@@ -34,7 +35,7 @@ void World::Reset(int level)
 
 void World::Update()
 {
-	size_t asteroidCount = 0;
+	ActiveAsteroidCount = 0;
 
 	for (auto& asteroid : Asteroids)
 	{
@@ -44,7 +45,7 @@ void World::Update()
 			asteroid.Alive = false;
 
 		if (asteroid.Alive)
-			asteroidCount++;
+			ActiveAsteroidCount++;
 	}
 
 	for (auto& bullet : Bullets)
@@ -79,7 +80,7 @@ void World::Update()
 
 	PlayerShip.Update();
 	
-	if (asteroidCount == 0)
+	if (ActiveAsteroidCount == 0)
 	{
 		LevelClear = true;
 	}

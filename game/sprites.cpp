@@ -52,8 +52,8 @@ namespace Sprites
 
 	void Init()
 	{
-		AddTexture("resources/sheet.png");
-		AddTexture("resources/interfacePack_sheet@2.png");
+		AddTexture("sheet.png");
+		AddTexture("interfacePack_sheet@2.png");
 	
 		ShipSprite = AddFrame(0, 224, 832, 99, 75);
 		ShotSprite = AddFrame(0, 843, 977, 13, 37);

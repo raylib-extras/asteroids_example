@@ -97,7 +97,7 @@ void Player::Update()
 
 	float rotation = 270 * GetDeltaTime();
 
-	Vector2 mouseVec = Vector2Normalize(Vector2Subtract(GetMousePosition(), Vector2{ GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f }));
+	Vector2 mouseVec = Vector2Normalize(Vector2Subtract(GetMousePosition(), Vector2Scale(GetDisplaySize(),0.5f)));
 
 	if (Vector2LengthSqr(mouseVec) > 0)
 	{
@@ -208,4 +208,12 @@ void Player::Respawn()
 	Position = Vector2{ 0,0 };
 	Orientation = 0;
 	Reload = 0;
+}
+
+void Player::AddScore(int scoreDelta)
+{
+	if (!Alive)
+		return;
+
+	Score += scoreDelta;
 }

@@ -16,37 +16,21 @@ Quick Asterpids in C++
 #include "sprites.h"
 #include "sounds.h"
 #include "world.h"
+#include "resource_dir.h"
 
 #include <vector>
 
 Texture Background = { 0 };
 
-void ApplyViewCameraEffects(Camera2D& camera, bool turbo)
-{
-	camera.offset = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
-	if (!turbo)
-		return;
-
-	camera.offset.x += sinf(float(GetCurrentTime() * 90)) * 2;
-	camera.offset.y += sinf(float(GetCurrentTime() * 180)) * 2;
-}
-
-void ApplyOverlayCameraEffects(Camera2D& camera, bool turbo)
-{
-	camera.offset = { 0,0 };
-	if (!turbo)
-		return;
-
-	camera.offset.x += sinf(float(GetCurrentTime() * 90)) * 3;
-	camera.offset.y += sinf(float(GetCurrentTime() * 180)) * 3;
-}
-
 int main ()
 {
 	// set up the window
 	SetConfigFlags(FLAG_VSYNC_HINT);
-	InitWindow(1280, 800, "Fasteroids++");
+	InitWindow(WindowWidth, WindowHeight, "Fasteroids++");
+	CenterWindow();
 	SetFPSCap();
+
+	SearchAndSetResourceDir("resources");
 
 	SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 
@@ -55,14 +39,11 @@ int main ()
 
 	Sprites::Init();
 
+
 	Camera2D worldCamera = { 0 };
 	worldCamera.zoom = 0.5f;
-	worldCamera.offset = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
-
-	Camera2D overlayCamera = { 0 };
-	overlayCamera.zoom = 1.0f;
-
-	Background = LoadTexture("resources/darkPurple.png");
+	
+	Background = LoadTexture("darkPurple.png");
 
 	World world;
 
@@ -78,6 +59,12 @@ int main ()
 	{
 		UpdateGame();
 		Sounds::Update();
+
+		if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT)|| IsKeyDown(KEY_RIGHT_ALT)))
+			ToggleFullscreenState();
+
+		Vector2 center = Vector2Scale(GetDisplaySize(), 0.5f);
+		worldCamera.offset = center;
 
 		if (IsKeyDown(KEY_EQUAL))
 			worldCamera.zoom += 0.125f * GetDeltaTime();
@@ -96,15 +83,18 @@ int main ()
 
 		worldCamera.target = world.PlayerShip.Position;
 
-		ApplyViewCameraEffects(worldCamera, world.PlayerShip.Boost);
-
 		// drawing
 		BeginDrawing();
 		ClearBackground(BLACK);
 
+		if (World::Instance->Shake())
+			worldCamera.offset = Vector2{ center.x + cosf(float(GetCurrentTime() * 90)) * 2, center.y + cosf(float(GetCurrentTime() * 180)) * 2 };
+		else
+			worldCamera.offset = center;
+
 		BeginMode2D(worldCamera);
 
-		Rectangle screen = { 0,0,  (float)GetScreenWidth(),  (float)GetScreenHeight() };
+		Rectangle screen = { 0,0,  center.x*2,  center.y*2 };
 		Vector2 screenOriginInWorld = GetScreenToWorld2D(Vector2Zero(), worldCamera);
 		Vector2 screenEdgeInWorld = GetScreenToWorld2D(Vector2{ screen.width,screen.height }, worldCamera);
 		Rectangle screenInWorld = Rectangle{ screenOriginInWorld.x, screenOriginInWorld.y, screenEdgeInWorld.x - screenOriginInWorld.x,screenEdgeInWorld.y - screenOriginInWorld.y };
@@ -117,11 +107,8 @@ int main ()
 
 		EndMode2D();
 		
-		ApplyOverlayCameraEffects(overlayCamera, world.PlayerShip.Boost);
-		BeginMode2D(overlayCamera);
 		DrawOverlay();
-		EndMode2D();
-		
+
 		EndDrawing();
 	}
 

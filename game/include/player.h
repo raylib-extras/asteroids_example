@@ -9,7 +9,7 @@ public:
 	static constexpr float NominalPower = 1000;
 
 	float Reload = 0;
-	int Score = 0;
+
 	bool Thrusting = false;
 	bool Boost = false;
 
@@ -30,7 +30,12 @@ public:
 	void Reset();
 	void Respawn();
 
+	void AddScore(int scoreDelta);
+	inline int GetScore() const { return Score; }
+
 protected:
 	float ShieldHitAngle = 0;
 	float ShieldHitLifetime = -1;
+
+	int Score = 0;
 };

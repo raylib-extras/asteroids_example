@@ -14,6 +14,42 @@ double Time = 0;
 int Level = 1;
 float LevelChangeCountdown = LevelChangeTime;
 
+Camera2D OverlayCamera = { 0 };
+
+Vector2 GetDisplaySize()
+{
+	if (IsWindowFullscreen())
+		return Vector2{ (float)GetMonitorWidth(GetCurrentMonitor()), (float)GetMonitorHeight(GetCurrentMonitor()) };
+	else
+		return Vector2{ (float)GetScreenWidth(), (float)GetScreenHeight() };
+}
+
+void ToggleFullscreenState()
+{
+	if (IsWindowFullscreen())
+	{
+		ToggleFullscreen();
+		SetWindowSize(WindowWidth, WindowHeight);
+		CenterWindow();
+	}
+	else
+	{
+		int monitor = GetCurrentMonitor();
+		SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
+		ToggleFullscreen();
+	}
+}
+
+void CenterWindow()
+{
+	int monitor = GetCurrentMonitor();
+
+	int x = GetMonitorWidth(monitor) / 2 - WindowWidth / 2;
+	int y = GetMonitorHeight(monitor) / 2 - WindowHeight / 2;
+	
+	SetWindowPosition(x, y);
+}
+
 double GetCurrentTime()
 {
 	return Time;
@@ -65,7 +101,8 @@ void DrawCenteredText(const char* text, float textSize = 20, float yOffset = 0.5
 {
 	Vector2 size = MeasureTextEx(GetFontDefault(), text, textSize, textSize / 10);
 
-	Vector2 pos = { GetScreenWidth() * xOffset - size.x / 2.0f, GetScreenHeight() * yOffset - size.y / 2.0f };
+
+	Vector2 pos = { GetDisplaySize().x * xOffset - size.x / 2.0f, GetDisplaySize().y * yOffset - size.y / 2.0f };
 	DrawText(text, int(pos.x), int(pos.y), int(textSize), WHITE);
 }
 
@@ -75,7 +112,7 @@ void DrawMiniMap()
 
 	float rad = center.x * 0.5f - 10;
 
-	center.x = GetScreenWidth() - (center.x / 2.0f);
+	center.x = GetDisplaySize().x - (center.x / 2.0f);
 	center.y = center.y / 2.0f;
 
 	DrawCircleV(center, rad, ColorAlpha(BLACK, 0.75f));
@@ -96,23 +133,47 @@ void DrawMiniMap()
 
 		DrawCircleV(relPos, 2, BROWN);
 	}
+
+	for (const auto& powerup : World::Instance->PowerUps)
+	{
+		if (!powerup.Alive || Vector2DistanceSqr(World::Instance->PlayerShip.Position, powerup.Position) >= viewDist * viewDist)
+			continue;
+
+		Vector2 relPos = Vector2Subtract(powerup.Position, World::Instance->PlayerShip.Position);
+		relPos = Vector2Scale(relPos, viewScale);
+		relPos = Vector2Add(relPos, center);
+
+		DrawCircleV(relPos, 1, PURPLE);
+	}
 }
 
 void DrawGameHud()
 {
-	DrawText(TextFormat("Score %d", World::Instance->PlayerShip.Score), 0, 0, 40, BLUE);
+	OverlayCamera.zoom = 1.0f;
+	if (World::Instance->Shake())
+		OverlayCamera.offset = Vector2{ sinf(float(GetCurrentTime() * 90)) * 3, sinf(float(GetCurrentTime() * 180)) * 3 };
+	else
+		OverlayCamera.offset = Vector2Zero();
+
+	BeginMode2D(OverlayCamera);
+	DrawText(TextFormat("Level %d | Score %d", Level, World::Instance->PlayerShip.GetScore()), 0, 0, 40, BLUE);
 
 	DrawMiniMap();
-	Vector2 upperRight = { float(GetScreenWidth()),0 };
+	if (World::Instance->GetActiveAsteroidCount() < 10)
+	{
+		DrawCenteredText(TextFormat("Asteroids Left : %d", World::Instance->GetActiveAsteroidCount()), 20, 0.125f);
+	}
+
+	Vector2 upperRight = { float(GetDisplaySize().x),0 };
 	Sprites::DrawJustfied(Sprites::MiniMapSprite, upperRight, Sprites::Justifications::Max, Sprites::Justifications::Min);
 
 	float topBarWidth = 222+33;
-	float center = GetScreenWidth()/ 2.0f - topBarWidth / 2.0f;
+	float center = GetDisplaySize().x / 2.0f - topBarWidth / 2.0f;
 
 	Sprites::DrawJustfied(Sprites::BoostIcon, Vector2{ center, 3 }, Sprites::Justifications::Min, Sprites::Justifications::Min);
 	Sprites::DrawJustfied(Sprites::ShieldIcon, Vector2{ center, 43 }, Sprites::Justifications::Min, Sprites::Justifications::Min);
 
-	center = GetScreenWidth() / 2.0f + topBarWidth / 2.0f;
+	center = GetDisplaySize().x / 2.0f + topBarWidth / 2.0f;
 
 	float boostFactor = World::Instance->PlayerShip.Power / 1000.0f;
 	float shieldFactor = World::Instance->PlayerShip.Shield / 1000.0f;
@@ -142,6 +203,7 @@ void DrawGameHud()
 
 		Sprites::DrawJustfied(Sprites::ShieldProgress, Vector2{ center, 43 }, Sprites::Justifications::Max, Sprites::Justifications::Min, Vector2{ shieldFactor * 222, 33 }, c);
 	}
+	EndMode2D();
 }
 
 void DrawLevelChangeCountdown()
@@ -151,7 +213,7 @@ void DrawLevelChangeCountdown()
 
 void DrawGameOver()
 {
-	DrawCenteredText(TextFormat("Game Over, your score was %d, good job!", World::Instance->PlayerShip.Score), 20, 0.25f);
+	DrawCenteredText(TextFormat("Game Over, your score was %d, good job!", World::Instance->PlayerShip.GetScore()), 20, 0.25f);
 	
 	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_SPACE))
 	{
@@ -207,5 +269,5 @@ void DrawOverlay()
 			break;
 	}
 
-	DrawFPS(0, GetScreenHeight() - 20);
+	DrawFPS(0, (int)GetDisplaySize().y - 20);
 }

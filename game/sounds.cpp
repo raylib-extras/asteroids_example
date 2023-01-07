@@ -26,19 +26,19 @@ namespace Sounds
 	void Init()
 	{
 		InitAudioDevice();
-		BGM = LoadMusicStream("resources/bgm.ogg");
+		BGM = LoadMusicStream("bgm.ogg");
 		BGM.looping = true;
 
-		Thrust = LoadMusicStream("resources/thruster.ogg");
+		Thrust = LoadMusicStream("thruster.ogg");
 		Thrust.looping = true;
 
-		Boost = LoadMusicStream("resources/boost.ogg");
+		Boost = LoadMusicStream("boost.ogg");
 		Boost.looping = true;
 
-		AsteroidHit = AddEffect("resources/asteroid_hit.ogg");
-		Destoryed = AddEffect("resources/destoryed.ogg");
-		SheldHit = AddEffect("resources/shield_hit.ogg");
-		Shot = AddEffect("resources/shot.ogg");
+		AsteroidHit = AddEffect("asteroid_hit.ogg");
+		Destoryed = AddEffect("destoryed.ogg");
+		SheldHit = AddEffect("shield_hit.ogg");
+		Shot = AddEffect("shot.ogg");
 	}
 
 	void Shutdown()
