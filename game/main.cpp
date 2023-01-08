@@ -54,10 +54,13 @@ int main ()
 
 	Sounds::StartBGM();
 
+	SetExitKey(KEY_NULL);
+
+	bool quit = false;
+
 	// game loop
-	while (!WindowShouldClose())
+	while (!WindowShouldClose() && UpdateGame())
 	{
-		UpdateGame();
 		Sounds::Update();
 
 		if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))

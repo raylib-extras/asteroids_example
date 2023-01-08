@@ -6,6 +6,7 @@
 #include "explosion.h"
 #include "world.h"
 #include "sounds.h"
+#include "game.h"
 
 constexpr float BaseReloadTime = 0.5f;
 constexpr float ShieldHitMaxLife = 0.35f;
@@ -58,6 +59,9 @@ void Player::Draw() const
 
 void Player::Update()
 {
+	if (IsPaused())
+		return;
+
 	ShieldHitLifetime -= GetDeltaTime();
 
 	if (!Alive)

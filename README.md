@@ -146,7 +146,10 @@ Shows the main game hud and checks to see if the player has died or cleared the 
 If the player has died, they are sent to the game over state.
 
 ### Next Level
-SHows a countdown timer for the next level. When the timer is done, the level is incremented and the world is reset and the player is respawned.
+Shows a countdown timer for the next level. When the timer is done, the level is incremented and the world is reset and the player is respawned.
+
+### Paused
+Shows a pause screen.
 
 ### Game Over
 Shows a game over screen with the current score and waits for a click, On Click the world is reset to a default but the player is left dead, and the gamestate is set to the menu state.
@@ -173,7 +176,6 @@ Every time a new level starts the entities in the world are reset and the player
 Bullets, explosions and shields are drawn with an additive blend mode to make them appear more smooth.
 
 ## TODO
-* Pause
 * UFO
 * Code Comments
 * Menu for volume?

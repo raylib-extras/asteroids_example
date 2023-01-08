@@ -19,6 +19,8 @@ float LevelChangeCountdown = LevelChangeTime;
 
 Camera2D OverlayCamera = { 0 };
 
+bool Running = true;
+
 Vector2 GetDisplaySize()
 {
 	if (IsWindowFullscreen())
@@ -70,10 +72,25 @@ float GetDeltaTime()
 #endif
 }
 
-void UpdateGame()
+void EndGame()
+{
+	GameState = GameStates::GameOver;
+	Sounds::SetThrustState(false, false);
+	World::Instance->PlayerShip.Alive = false;
+}
+
+bool UpdateGame()
 {
 	if (GameState != GameStates::Paused)
 		Time += GetDeltaTime();
+
+	if (GameState == GameStates::Paused)
+	{
+		if (World::Instance->PlayerShip.AcceptPressed())
+			GameState = GameStates::Playing;
+		else if (IsKeyPressed(KEY_ESCAPE))
+			EndGame();
+	}
 
 	if (GameState == GameStates::ChangingLevels)
 	{
@@ -83,6 +100,9 @@ void UpdateGame()
 			GameState = GameStates::Playing;
 			World::Instance->Reset(Level);
 		}
+
+		if (IsKeyPressed(KEY_ESCAPE))
+			GameState = GameStates::Paused;
 	}
 
 	if (GameState == GameStates::Playing)
@@ -90,8 +110,8 @@ void UpdateGame()
 		if (!World::Instance->PlayerShip.Alive)
 		{
 			Sounds::PlaySoundEffect(Sounds::GameOver);
-			GameState = GameStates::GameOver;
-			Sounds::SetThrustState(false, false);
+			EndGame();
+			
 		}
 		else if(World::Instance->IsLevelClear())
 		{
@@ -99,7 +119,12 @@ void UpdateGame()
 			LevelChangeCountdown = LevelChangeTime;
 			Level += 1;
 		}
+
+		if (IsKeyPressed(KEY_ESCAPE))
+			GameState = GameStates::Paused;
 	}
+
+	return Running;
 }
 
 void DrawCenteredText(const char* text, float textSize = 20, float yOffset = 0.5f, float xOffset = 0.5f)
@@ -126,7 +151,6 @@ void DrawMiniMap()
 	float viewDist = 3000;
 
 	float viewScale = rad / viewDist;
-
 	
 	for (const auto& asteroid : World::Instance->Asteroids)
 	{
@@ -241,6 +265,11 @@ void DrawGameOver()
 	}
 }
 
+void DrawPaused()
+{
+	DrawCenteredText("Paused, escape to quit, click to resume", 40, 0.25f);
+}
+
 void DrawMenu()
 {
 	DrawCenteredText("Fasteroids++!", 60, 0.125f);
@@ -251,6 +280,9 @@ void DrawMenu()
 	DrawCenteredText("Mouse to steer, W or right click to thrust", 20, 0.55f);
 	DrawCenteredText("Left Click or space to fire", 20, 0.6f);
 	DrawCenteredText("Shift + Thrust to Boost", 20, 0.65f);
+
+	if (IsKeyPressed(KEY_ESCAPE))
+		Running = false;
 	
 	if (World::Instance->PlayerShip.AcceptPressed())
 	{
@@ -284,6 +316,7 @@ void DrawOverlay()
 
 		case GameStates::Paused:
 			DrawGameHud();
+			DrawPaused();
 			break;
 
 		case GameStates::GameOver:
