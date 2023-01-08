@@ -5,6 +5,18 @@ An example game of asteroids for raylib written in C++.
 Uses game-premake
 https://github.com/raylib-extras/game-premake
 
+### Windows MinGW
+Run the premake-mingw.bat and then run make in the folder
+
+### Windows Visual Studio (not VSC)
+Run premake-VisualStudio.bat and then open the fasteroids.sln that is generated
+
+### Linux
+CD into the directory, run ./premake5 gmake2 and then run make
+
+### MacOS
+CD into the directory, run ./premake5.osx gmake2 and then run make
+
 ## Pre-Release
 Pre-Release, still a work in progress.
 
@@ -116,12 +128,49 @@ The player entity has the following properties
 The player has cusotm drawing logic that handles showing the thruster fire in regular and boost mode, as well as showing when the shield has been hit, and fades out over time.
 
 ## Sprites
+All sprites are contained in the Sprites namespace that stores a list of sprite frames. A sprite frame is an index into a spritesheet and a source rectangle. Sprites are drawn by providing the sprite frame ID from a set of extern variables that the rest of the code can use. Sprite drawing by default centers the sprite frame on the position unless the DrawJustified function is used. Options are available to modify the center point to allow for various special effects.
 
 ## Audio
+Audio is contained in the Sounds namespace and works in a similar way to how sprites are managed. There are 3 main music streams, the background music, and two thuster tracks. The thruster tracks are only played when the player is trusting and boosting.
+
+Sound effects are played with PlaySoundMulti.
 
 ## Game System (overlays and gamestate)
+The Game namespace tracks the current game state and draws the correct overlay for that state. Each state is reponsible for transitioning to the next state based on actions in the state.
+
+### Menu
+SHows the menu screen with instructions and waits for a click, then resets the world back to level 1 and resets the player and changes the game state to playing
+
+### Playing HUD
+Shows the main game hud and checks to see if the player has died or cleared the level. If the level is cleared, the gamestate is set to the NextLevel state.
+If the player has died, they are sent to the game over state.
+
+### Next Level
+SHows a countdown timer for the next level. When the timer is done, the level is incremented and the world is reset and the player is respawned.
+
+### Game Over
+Shows a game over screen with the current score and waits for a click, On Click the world is reset to a default but the player is left dead, and the gamestate is set to the menu state.
 
 ## Other Notable Things
+
+### Entity Buffer Reuse
+There is common code in the various entity create functions that will look for an empty slot in the list of entities for that type before creating a new one. This is to prevent the removal of an entity from causing the rest of the entities to need to be moved. This code would be a great candidate for templates in C++, but they were not used in this example to keep it simple.
+
+### Camera
+The world is drawn using a Camera2d. The offset is set as the center of the screen, and the target is set to track the player. This allows the game to follow the player though the world that is larger than the screen.
+
+When boosing the offet is jittered at a high frequency using sin and cos to provide a shake effect.
+
+A second camera is used to draw the overlay, in order to provide a magnified shake effect for the UI.
+
+### Culling
+In order to not draw things that can't be seen the world system checks the distance to each assteroid an only draws ones that are within a specific radius of the screen center. This radius is computed using the screen size in world space. 
+
+### Levels
+Every time a new level starts the entities in the world are reset and the player is respanwed. The level number is used to add more asteroids to the level and increase the speed. 
+
+### Additive Blending
+Bullets, explosions and shields are drawn with an additive blend mode to make them appear more smooth.
 
 ## TODO
 * Pause
