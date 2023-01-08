@@ -85,12 +85,12 @@ The Powerup entity is randomly spawned when an asteroid is hit. There is a 10% c
 
 There are 3 powerup types
 
-    * Shot (Red)
-        - Reduces the reload time between shots (more bullets)
-    * Shield (Yellow)
-        - Adds 10% shield power back to the player (up to the maxium), and increases the ammount of sheild regeneration per second.
-    * Boost (Blue)
-        - Adds 10% boost power back to the player (up to the maxium), incrases the base speed and increases the boost multiplyer of the player ship.
+* Shot (Red)
+    - Reduces the reload time between shots (more bullets)
+* Shield (Yellow)
+    - Adds 10% shield power back to the player (up to the maxium), and increases the ammount of sheild regeneration per second.
+* Boost (Blue)
+    - Adds 10% boost power back to the player (up to the maxium), incrases the base speed and increases the boost multiplyer of the player ship.
 
 #### Explosions
 Explosion entities are spawned when asteroids or the player is destoryed. They are a graphics only entity and do not affect gameplay. They do not move and are not checked for collisions. Each explision has a list of particle entities that are used to draw the various parts of the explosion. Explosions have a short fixed lifetime and fade out as they die.
@@ -100,18 +100,18 @@ The world contains a single player entity that contains all the state data perta
 
 The player entity has the following properties
 
-    * Base Thrust
-        - When thrusting this is the speed per second per added to the velocity vector. Powerups can increase this.
-    * Boost Multiplyer
-        - When boosting this is how much extra thrust is added. Powerups can increase this.
-    * Power
-        - When boosting power is reduced. A boost can not be started if the boost power is less than 25%. A boost will end when boost power is at 0. WHen not boosting boost power will restore at a fixed rate.
-    * Shield
-        - When the ship hits an asteroid it's radius is removed from the shield total. If the shield drops below 0 the ship is destoryed and the game session is over. The shield power restores slowly at the shield restore rate.
-    * Shield Restore Rate
-        - How much shield power per second is added back. Powerups can increase this.
-    * Shot reload time
-        - How much time before the ship can shoot again. Powerups can lower this time (allowing more bullets alive at a time)
+* Base Thrust
+    - When thrusting this is the speed per second per added to the velocity vector. Powerups can increase this.
+* Boost Multiplyer
+    - When boosting this is how much extra thrust is added. Powerups can increase this.
+* Power
+    - When boosting power is reduced. A boost can not be started if the boost power is less than 25%. A boost will end when boost power is at 0. WHen not boosting boost power will restore at a fixed rate.
+* Shield
+    - When the ship hits an asteroid it's radius is removed from the shield total. If the shield drops below 0 the ship is destoryed and the game session is over. The shield power restores slowly at the shield restore rate.
+* Shield Restore Rate
+    - How much shield power per second is added back. Powerups can increase this.
+* Shot reload time
+    - How much time before the ship can shoot again. Powerups can lower this time (allowing more bullets alive at a time)
 
 The player has cusotm drawing logic that handles showing the thruster fire in regular and boost mode, as well as showing when the shield has been hit, and fades out over time.
 
@@ -124,10 +124,9 @@ The player has cusotm drawing logic that handles showing the thruster fire in re
 ## Other Notable Things
 
 ## TODO
+* Pause
 * UFO
-
 * Code Comments
-
 * Menu for volume?
 * Bins for major platforms
 
