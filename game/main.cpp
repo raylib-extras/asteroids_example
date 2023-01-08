@@ -50,7 +50,7 @@ int main ()
 	GameState = GameStates::Menu;
 	world.PlayerShip.Reset();
 	world.PlayerShip.Alive = false;
-	world.Reset(50);
+	world.Reset(10);
 
 	Sounds::StartBGM();
 

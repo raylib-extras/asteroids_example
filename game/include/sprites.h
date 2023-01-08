@@ -50,6 +50,8 @@ namespace Sprites
 
 	extern size_t Cursor;
 
+	extern size_t NavArrow;
+
 	void Init();
 	void Shutdown();
 

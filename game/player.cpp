@@ -20,7 +20,8 @@ void Player::Draw() const
 {
 	if (Thrusting && Alive)
 	{
-		float sizeOffset = cosf((float)GetTime() * 20) * 3 + (Radius*1.2f);
+		float extension = Boost ? 25 : 3;
+		float sizeOffset = cosf((float)GetTime() * 20) * extension + (Radius*1.2f);
 		Vector2 offset = { 0, -sizeOffset * 0.5f };
 
 		size_t sprite = Boost ? Sprites::TurboThustSprite : Sprites::ThrustSprite;

@@ -126,6 +126,8 @@ void DrawMiniMap()
 	float viewDist = 3000;
 
 	float viewScale = rad / viewDist;
+
+	
 	for (const auto& asteroid : World::Instance->Asteroids)
 	{
 		if (!asteroid.Alive || Vector2DistanceSqr(World::Instance->PlayerShip.Position, asteroid.Position) >= viewDist * viewDist)
@@ -149,6 +151,22 @@ void DrawMiniMap()
 
 		DrawCircleV(relPos, 1, PURPLE);
 	}
+
+	Vector2 upperRight = { float(GetDisplaySize().x),0 };
+	Sprites::DrawJustfied(Sprites::MiniMapSprite, upperRight, Sprites::Justifications::Max, Sprites::Justifications::Min);
+
+	if (World::Instance->GetActiveAsteroidCount() < 6)
+	{
+		for (const auto& asteroid : World::Instance->Asteroids)
+		{
+			if (!asteroid.Alive)
+				continue;
+
+			Vector2 relPos = Vector2Subtract(asteroid.Position, World::Instance->PlayerShip.Position);
+			float angle = atan2f(relPos.y, relPos.x) * RAD2DEG + 90;
+			Sprites::Draw(Sprites::NavArrow, center, angle, Vector2{ 16,16 }, RED, Vector2{ 0,rad - 8 });
+		}
+	}
 }
 
 void DrawGameHud()
@@ -167,9 +185,6 @@ void DrawGameHud()
 	{
 		DrawCenteredText(TextFormat("Asteroids Left : %d", World::Instance->GetActiveAsteroidCount()), 20, 0.125f);
 	}
-
-	Vector2 upperRight = { float(GetDisplaySize().x),0 };
-	Sprites::DrawJustfied(Sprites::MiniMapSprite, upperRight, Sprites::Justifications::Max, Sprites::Justifications::Min);
 
 	float topBarWidth = 222+33;
 	float center = GetDisplaySize().x / 2.0f - topBarWidth / 2.0f;
@@ -222,7 +237,7 @@ void DrawGameOver()
 	if (World::Instance->PlayerShip.AcceptPressed())
 	{
 		GameState = GameStates::Menu;
-		World::Instance->Reset(50);
+		World::Instance->Reset(10);
 	}
 }
 
