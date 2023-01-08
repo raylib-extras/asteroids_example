@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-constexpr char Version[] = "Ver 0.0.2.Bitter_Ninja Copyright 2023 Jeffery Myers";
+constexpr char Version[] = "Ver 0.0.3.Petty_Dragon Copyright 2023 Jeffery Myers";
 
 constexpr float LevelChangeTime = 10;
 
