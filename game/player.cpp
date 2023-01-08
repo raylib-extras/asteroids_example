@@ -93,11 +93,25 @@ void Player::Update()
 			Orientation = atan2f(mouseVec.y, mouseVec.x) * RAD2DEG + 90;
 		}
 	}
-	else if(IsGamepadAvailable(0))
+	else 
 	{
 		float rotation = 360 * GetDeltaTime();
 
-		Orientation += GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) * rotation;
+		float input = 0;
+
+		if (IsKeyDown(KEY_A) || IsKeyDown(KEY_D))
+		{
+			if (IsKeyDown(KEY_A))
+				input -= 1;
+			if (IsKeyDown(KEY_D))
+				input += 1;
+		}
+		else if (IsGamepadAvailable(0))
+		{
+			input = GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X);
+		}
+
+		Orientation += input * rotation;
 	}
 
 	if (!wantBoost)
