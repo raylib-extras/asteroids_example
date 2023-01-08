@@ -56,7 +56,7 @@ bool Asteroid::Collide(const Entity& other)
 
 		Alive = false;
 
-		if (GetRandomValue(0, 10) == 0)
+		if (GetRandomValue(0, 9) == 0)
 			PowerUp::Create(Position);
 	}
 	return hit;

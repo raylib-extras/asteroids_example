@@ -9,7 +9,7 @@
 
 constexpr float BaseReloadTime = 0.5f;
 constexpr float ShieldHitMaxLife = 0.35f;
-constexpr float BreakingFriction = 10;
+constexpr float BreakingFriction = 0.025f;
 
 Player::Player()
 {
@@ -136,12 +136,12 @@ void Player::Update()
 		Thrusting = true;
 	}
 
-	float frictionScale = 1;
+	float frictionScale = 90;
 	if (wantBreak)
-		frictionScale *= BreakingFriction;
+		frictionScale *= BreakingFriction * MaxThrust;
 
 	Vector2 normVel = Vector2Normalize(Velocity);
-	Vector2 friction = Vector2Scale(normVel, -90.0f * frictionScale * GetFrameTime());
+	Vector2 friction = Vector2Scale(normVel, -frictionScale * GetFrameTime());
 	if (Vector2LengthSqr(friction) >= Vector2LengthSqr(Velocity))
 		Velocity = { 0, 0 };
 	else
