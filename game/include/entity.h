@@ -28,12 +28,13 @@
 #include "raylib.h"
 #include "raymath.h"
 
+// base entity class that contains common data used by all entity types
 class Entity
 {
 public:
 	virtual ~Entity() = default;
 
-	bool Alive = false;
+	bool Alive = false;	
 
 	Vector2 Position = { 0 };
 	float Orientation = 0;

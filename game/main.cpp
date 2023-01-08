@@ -33,14 +33,15 @@
 #include "explosion.h"
 #include "game.h"
 #include "player.h"
-#include "sprites.h"
-#include "sounds.h"
-#include "world.h"
 #include "resource_dir.h"
+#include "sounds.h"
+#include "sprites.h"
+#include "world.h"
 
 #include <vector>
 
-Texture Background = { 0 };
+
+Texture Background = { 0 };	// texture to use for the background image
 
 int main ()
 {
@@ -49,43 +50,49 @@ int main ()
 	InitWindow(WindowWidth, WindowHeight, "Fasteroids++");
 	CenterWindow();
 	SetFPSCap();
+	SetExitKey(KEY_NULL);
 
+
+	// find our resource dir and set it as the current working dir
 	SearchAndSetResourceDir("resources");
 
+	// hide the OS cursor, we are going to draw our own
 	HideCursor();
-	//SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 
+	// set up sounds
 	Sounds::Init();
 	SetMasterVolume(0.5f);
 
+	// load images
 	Sprites::Init();
+	Background = LoadTexture("darkPurple.png");
 
+	// setup the camera for the game world
 	Camera2D worldCamera = { 0 };
 	worldCamera.zoom = 0.5f;
 	
-	Background = LoadTexture("darkPurple.png");
-
-	World world;
-
-	GameState = GameStates::Menu;
+	// setup world
+	World& world = World::Create();
 	world.PlayerShip.Reset();
 	world.PlayerShip.Alive = false;
 	world.Reset(10);
 
+	// setup gamestate
+	GameState = GameStates::Menu;
+
+	// start some music
 	Sounds::StartBGM();
-
-	SetExitKey(KEY_NULL);
-
-	bool quit = false;
 
 	// game loop
 	while (!WindowShouldClose() && UpdateGame())
 	{
-		Sounds::Update();
+		// input that is unrelated to the game
 
+		// check for fullscreen toggle
 		if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
 			ToggleFullscreenState();
 			
+		// update the world camera
 		Vector2 center = Vector2Scale(GetDisplaySize(), 0.5f);
 		worldCamera.offset = center;
 
@@ -96,27 +103,34 @@ int main ()
 
 		worldCamera.zoom += GetMouseWheelMove() * 0.125f * GetDeltaTime();
 
+		// clamp the zoom
 		if (worldCamera.zoom <= 0)
 			worldCamera.zoom = 0.25f;
 
 		if (worldCamera.zoom > 1)
 			worldCamera.zoom = 1;
 
+		// update the world and all that is in it
 		world.Update();
-
 		worldCamera.target = world.PlayerShip.Position;
+
+		// update the sound system
+		Sounds::Update();
 
 		// drawing
 		BeginDrawing();
 		ClearBackground(BLACK);
 
+		// if we need to shake, shake the world camera
 		if (World::Instance->Shake())
 			worldCamera.offset = Vector2{ center.x + cosf(float(GetCurrentTime() * 90)) * 2, center.y + cosf(float(GetCurrentTime() * 180)) * 2 };
 		else
 			worldCamera.offset = center;
 
+		// draw the world inside it's view
 		BeginMode2D(worldCamera);
 
+		// compute the size of the background and shift it based on our movement
 		Rectangle screen = { 0,0,  center.x*2,  center.y*2 };
 		Vector2 screenOriginInWorld = GetScreenToWorld2D(Vector2Zero(), worldCamera);
 		Vector2 screenEdgeInWorld = GetScreenToWorld2D(Vector2{ screen.width, screen.height }, worldCamera);
@@ -126,23 +140,26 @@ int main ()
 		Rectangle sourceRect = Rectangle{ screenInWorld.x * bgScale, screenInWorld.y * bgScale, screenInWorld.width * bgScale, screenInWorld.height * bgScale };
 		DrawTexturePro(Background, sourceRect, screenInWorld, Vector2Zero(), 0, WHITE);
 
+		// draw the world and pass in the viewport window in world space for culling
 		world.Draw(screenInWorld);
 
 		EndMode2D();
 		
+		// draw the game state specific overlay
 		DrawOverlay();
 
+		// custom cursor may not work in fullscreen, so draw our own after everything
 		Sprites::Draw(Sprites::Cursor, GetMousePosition(), 0);
 
 		EndDrawing();
 	}
 
+	// cleanup
 	UnloadTexture(Background);
 	Sprites::Shutdown();
-
 	Sounds::Shutdown();
+	World::Destory();
 
-	// cleanup
 	CloseWindow();
 	return 0;
 }

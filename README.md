@@ -176,9 +176,6 @@ Every time a new level starts the entities in the world are reset and the player
 Bullets, explosions and shields are drawn with an additive blend mode to make them appear more smooth.
 
 ## TODO
-* UFO
-* Code Comments
-* Menu for volume?
-* Bins for major platforms
+* UFOs?
 
 ## Bugs

@@ -38,9 +38,11 @@ class World
 {
 public:
 	static World* Instance;
-
-	World() { Instance = this; }
-	virtual ~World() { if (Instance == this) Instance = nullptr; }
+	
+	static World& Create();
+	static void Destory();
+	
+	virtual ~World() = default;
 
 	Rectangle Bounds = { -6000, -6000, 12000, 12000 };
 
@@ -67,4 +69,6 @@ public:
 protected:
 	bool LevelClear = false;
 	size_t ActiveAsteroidCount = 0;
+	World() {}
+
 };

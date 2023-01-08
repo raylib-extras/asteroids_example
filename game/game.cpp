@@ -46,6 +46,7 @@ Camera2D OverlayCamera = { 0 };
 
 bool Running = true;
 
+// in fullscreen mode we can't use GetScreenWidth/Height, so make a function that gets the right data for each mode
 Vector2 GetDisplaySize()
 {
 	if (IsWindowFullscreen())
@@ -80,18 +81,20 @@ void CenterWindow()
 	SetWindowPosition(x, y);
 }
 
+// to support pause, we track our own time
 double GetCurrentTime()
 {
 	return Time;
 }
 
+// to support pause, and make debugging easier, we track our own delta time
 float GetDeltaTime()
 {
 	if (GameState == GameStates::Paused)
 		return 0;
 
 #ifdef _DEBUG
-	return 1.0f / FIXED_FRAME_RATE;
+	return 1.0f / FIXED_FRAME_RATE;		// if we are debugging, use a fixed frame rate so that we doin't get lag spikes when hitting breakpoints
 #else
 	return GetFrameTime();
 #endif

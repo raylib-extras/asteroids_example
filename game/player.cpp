@@ -44,20 +44,24 @@ Player::Player()
 
 void Player::Draw() const
 {
-	if (Thrusting && Alive)
-	{
-		float extension = Boost ? 25.0f : 3.0f;
-		float sizeOffset = cosf((float)GetTime() * 20) * extension + (Radius*1.2f);
-		Vector2 offset = { 0, -sizeOffset * 0.5f };
-
-		size_t sprite = Boost ? Sprites::TurboThustSprite : Sprites::ThrustSprite;
-
-		Sprites::Draw(sprite, Position, Orientation, Vector2{Radius*0.45f, sizeOffset}, WHITE, offset);
-	}
-
 	if (Alive)
-		Sprites::Draw(Sprites::ShipSprite, Position, Orientation);
+	{
+		if (Thrusting) // draw the thrust flame (below the ship so it doesn't clip over it)
+		{
+			float extension = Boost ? 25.0f : 3.0f;
+			float sizeOffset = cosf((float)GetTime() * 20) * extension + (Radius * 1.2f);
+			Vector2 offset = { 0, -sizeOffset * 0.5f };
 
+			size_t sprite = Boost ? Sprites::TurboThustSprite : Sprites::ThrustSprite;
+
+			Sprites::Draw(sprite, Position, Orientation, Vector2{ Radius * 0.45f, sizeOffset }, WHITE, offset);
+		}
+
+		// draw the ship
+		Sprites::Draw(Sprites::ShipSprite, Position, Orientation);
+	}
+	
+	// the sheild may need to be drawn after we die since that may be the hit that killed us
 	if (ShieldHitLifetime > 0)
 	{
 		BeginBlendMode(BLEND_ADDITIVE);
@@ -87,22 +91,22 @@ void Player::Update()
 	if (IsPaused())
 		return;
 
+	// decay the shield hit time (even if we are dead, so it animates)
 	ShieldHitLifetime -= GetDeltaTime();
 
 	if (!Alive)
 		return;
 
+	// add some shield power back
 	Shield += GetDeltaTime() * ShieldRecharge;
 	if (Shield > MaxShield)
 		Shield = MaxShield;
 
+	
+	// gather our input states
 	bool wantThrust = IsKeyDown(KEY_W) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT);
-	Thrusting = false;
-
 	bool wantBoost = (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && wantThrust;
-
 	bool wantShoot = IsKeyDown(KEY_SPACE) || IsMouseButtonDown(MOUSE_BUTTON_LEFT);
-
 	bool wantBreak = IsKeyDown(KEY_S);
 
 	if (IsGamepadAvailable(0))
@@ -113,6 +117,7 @@ void Player::Update()
 		wantBreak = wantBreak || IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_LEFT);
 	}
 
+	// handle rotation by mouse,keyboard, or gamepad
 	if (Vector2LengthSqr(GetMouseDelta()) > 0)
 	{
 		Vector2 mouseVec = Vector2Normalize(Vector2Subtract(GetMousePosition(), Vector2Scale(GetDisplaySize(), 0.5f)));
@@ -143,6 +148,13 @@ void Player::Update()
 		Orientation += input * rotation;
 	}
 
+	// ensure our angle is between -180 and +180
+	while (Orientation > 180)
+		Orientation -= 360;
+	while (Orientation < -180)
+		Orientation += 360;
+
+	// boost if we can boost
 	if (!wantBoost)
 		Boost = false;
 	else if (wantBoost && Power > MaxPower / 4)
@@ -150,6 +162,7 @@ void Player::Update()
 	else if (Power <= 1)
 		Boost = false;
 
+	// adjust power levels
 	if (Boost)
 	{
 		Power -= GetDeltaTime() * 400;
@@ -164,21 +177,31 @@ void Player::Update()
 	if (Power > MaxPower)
 		Power = MaxPower;
 
+	// decay the reload timer
 	Reload -= GetDeltaTime() * ShotSpeedMultiplyer;
 	
+	// turn our angle into a vector so we can see what way we are going
 	Vector2 shipVector = Vector2{ sinf(Orientation * DEG2RAD), -cosf(Orientation * DEG2RAD) };
 
+	// see how much we could move this frame
 	float speed = MaxThrust * GetDeltaTime();
 
 	if (Boost)
 		speed *= BoostMultiplyer;
 
+	// add our desired thrust vector to our current vector, this is what gives us intertia
 	if (wantThrust)
 	{
 		Velocity = Vector2Add(Velocity, Vector2Scale(shipVector, speed));
 		Thrusting = true;
 	}
+	else
+	{
+		Thrusting = false;
+	}
+	Sounds::SetThrustState(Thrusting, Boost);
 
+	// add in some friction to make the game a little more playable
 	float frictionScale = 90;
 	if (wantBreak)
 		frictionScale *= BreakingFriction * MaxThrust;
@@ -190,23 +213,20 @@ void Player::Update()
 	else
 		Velocity = Vector2Add(Velocity, friction);
 
+	// don't let us move too fast
 	float maxSpeed = Boost ? 5000.0f : 2000.0f;
 	if (Vector2LengthSqr(Velocity) > maxSpeed * maxSpeed)
 		Velocity = Vector2Scale(normVel, maxSpeed);
 
+	// update based on our velocity
 	Position = Vector2Add(Position, Vector2Scale(Velocity, GetDeltaTime()));
 
+	// if we hit the walls of the world, bounce
 	World::Instance->BounceBounds(*this);
 
-	// normalize angle
-	while (Orientation > 180)
-		Orientation -= 360;
-	while (Orientation < -180)
-		Orientation += 360;
-
+	// if we can shoot, shoot. We do this after movement so the shot comes out in the right place
 	if (wantShoot && Reload <= 0)
 	{
-		// fire
 		Reload = BaseReloadTime;
 
 		Vector2 shotPos = Vector2Add(Position, Vector2Scale(shipVector, Radius * 1.0f));
@@ -216,8 +236,6 @@ void Player::Update()
 
 		Sounds::PlaySoundEffect(Sounds::Shot);
 	}
-
-	Sounds::SetThrustState(Thrusting, Boost);
 }
 
 bool Player::Collide(const Entity& other)

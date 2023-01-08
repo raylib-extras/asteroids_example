@@ -28,6 +28,20 @@
 
 World* World::Instance = nullptr;
 
+World& World::Create()
+{
+	if (!Instance)
+		Instance = new World();
+	return *Instance;
+}
+
+void World::Destory()
+{
+	if (Instance)
+		delete(Instance);
+	Instance = nullptr;
+}
+
 void World::Reset(int level)
 {
 	float safeRad = 200;
