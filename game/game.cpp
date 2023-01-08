@@ -219,7 +219,7 @@ void DrawGameOver()
 {
 	DrawCenteredText(TextFormat("Game Over, your score was %d, good job!", World::Instance->PlayerShip.GetScore()), 20, 0.25f);
 	
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_SPACE))
+	if (World::Instance->PlayerShip.AcceptPressed())
 	{
 		GameState = GameStates::Menu;
 		World::Instance->Reset(50);
@@ -237,7 +237,7 @@ void DrawMenu()
 	DrawCenteredText("Left Click or space to fire", 20, 0.6f);
 	DrawCenteredText("Shift + Thrust to Boost", 20, 0.65f);
 	
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_SPACE))
+	if (World::Instance->PlayerShip.AcceptPressed())
 	{
 		Level = 1;
 		GameState = GameStates::Playing;

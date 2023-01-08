@@ -88,7 +88,7 @@ void World::Update()
 
 void World::Draw(Rectangle& screenInWorld) const
 {
-	float thickness = 30 + sinf(GetTime() * 10) * 10;
+	float thickness = 30 + sinf((float)GetTime() * 10) * 10;
 	Rectangle bounds = { Bounds.x - thickness, Bounds.y - thickness, Bounds.width + thickness * 2, Bounds.height + thickness + 2 };
 	DrawRectangleLinesEx(bounds, thickness, SKYBLUE);
 	DrawRectangleLinesEx(bounds, thickness/3, WHITE);

@@ -33,6 +33,8 @@ namespace Sprites
 	size_t BoostPowerup = 0;
 	size_t ShotPowerup = 0;
 
+	size_t Cursor = 0;
+
 	size_t AddFrame(size_t sheetId, float x, float y, float w, float h)
 	{
 		Frames.emplace_back(SpriteFrame{ sheetId, Rectangle{x,y,w,h} });
@@ -81,6 +83,8 @@ namespace Sprites
 		ShieldPowerup = AddFrame(0, 222, 129, 22, 21);
 		BoostPowerup = AddFrame(0, 674, 262, 22, 21);
 		ShotPowerup = AddFrame(0, 222, 108, 22, 21);
+
+		Cursor = AddFrame(0, 382, 814, 17, 17);
 
 		AsteroidSprites.push_back(AddFrame(0, 224, 664, 101, 84));
 		AsteroidSprites.push_back(AddFrame(0, 0, 520, 120, 98));

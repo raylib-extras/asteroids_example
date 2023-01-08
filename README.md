@@ -16,10 +16,8 @@ Pre-Release, still a work in progress.
 
 ## TODO
 * UFO
-* Controller Support
 
 * Code Comments
-* Cleanup API to player
 
 * Menu for volume?
 * Bins for major platforms

@@ -32,13 +32,13 @@ int main ()
 
 	SearchAndSetResourceDir("resources");
 
-	SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
+	HideCursor();
+	//SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 
 	Sounds::Init();
 	SetMasterVolume(0.5f);
 
 	Sprites::Init();
-
 
 	Camera2D worldCamera = { 0 };
 	worldCamera.zoom = 0.5f;
@@ -60,9 +60,9 @@ int main ()
 		UpdateGame();
 		Sounds::Update();
 
-		if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT)|| IsKeyDown(KEY_RIGHT_ALT)))
+		if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
 			ToggleFullscreenState();
-
+			
 		Vector2 center = Vector2Scale(GetDisplaySize(), 0.5f);
 		worldCamera.offset = center;
 
@@ -108,6 +108,8 @@ int main ()
 		EndMode2D();
 		
 		DrawOverlay();
+
+		Sprites::Draw(Sprites::Cursor, GetMousePosition(), 0);
 
 		EndDrawing();
 	}

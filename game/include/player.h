@@ -41,6 +41,8 @@ public:
 	void AddScore(int scoreDelta);
 	inline int GetScore() const { return Score; }
 
+	bool AcceptPressed();
+
 protected:
 	float ShieldHitAngle = 0;
 	float ShieldHitLifetime = -1;

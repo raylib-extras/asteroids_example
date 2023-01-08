@@ -66,12 +66,38 @@ void Player::Update()
 	if (Shield > MaxShield)
 		Shield = MaxShield;
 
-	// TODO, game pad support
-
 	bool wantThrust = IsKeyDown(KEY_W) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT);
 	Thrusting = false;
 
 	bool wantBoost = (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && wantThrust;
+
+	bool wantShoot = IsKeyDown(KEY_SPACE) || IsMouseButtonDown(MOUSE_BUTTON_LEFT);
+
+	bool wantBreak = IsKeyDown(KEY_S);
+
+	if (IsGamepadAvailable(0))
+	{
+		wantThrust = wantThrust || GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_TRIGGER) > 0.125f;
+		wantBoost = wantBoost || (IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) && wantThrust > 0);
+		wantShoot = wantShoot || GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_TRIGGER) > 0.125f;
+		wantBreak = wantBreak || IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_LEFT);
+	}
+
+	if (Vector2LengthSqr(GetMouseDelta()) > 0)
+	{
+		Vector2 mouseVec = Vector2Normalize(Vector2Subtract(GetMousePosition(), Vector2Scale(GetDisplaySize(), 0.5f)));
+
+		if (Vector2LengthSqr(mouseVec) > 0)
+		{
+			Orientation = atan2f(mouseVec.y, mouseVec.x) * RAD2DEG + 90;
+		}
+	}
+	else if(IsGamepadAvailable(0))
+	{
+		float rotation = 360 * GetDeltaTime();
+
+		Orientation += GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) * rotation;
+	}
 
 	if (!wantBoost)
 		Boost = false;
@@ -95,16 +121,7 @@ void Player::Update()
 		Power = MaxPower;
 
 	Reload -= GetDeltaTime() * ShotSpeedMultiplyer;
-
-	float rotation = 270 * GetDeltaTime();
-
-	Vector2 mouseVec = Vector2Normalize(Vector2Subtract(GetMousePosition(), Vector2Scale(GetDisplaySize(),0.5f)));
-
-	if (Vector2LengthSqr(mouseVec) > 0)
-	{
-		Orientation = atan2f(mouseVec.y, mouseVec.x) * RAD2DEG + 90;
-	}
-
+	
 	Vector2 shipVector = Vector2{ sinf(Orientation * DEG2RAD), -cosf(Orientation * DEG2RAD) };
 
 	float speed = MaxThrust * GetDeltaTime();
@@ -112,14 +129,14 @@ void Player::Update()
 	if (Boost)
 		speed *= BoostMultiplyer;
 
-	if (wantThrust)
+	if (wantThrust > 0)
 	{
 		Velocity = Vector2Add(Velocity, Vector2Scale(shipVector, speed));
 		Thrusting = true;
 	}
 
 	float frictionScale = 1;
-	if (IsKeyDown(KEY_S))
+	if (wantBreak)
 		frictionScale *= BreakingFriction;
 
 	Vector2 normVel = Vector2Normalize(Velocity);
@@ -142,8 +159,6 @@ void Player::Update()
 		Orientation -= 360;
 	while (Orientation < -180)
 		Orientation += 360;
-
-	bool wantShoot = IsKeyDown(KEY_SPACE) || IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 
 	if (wantShoot && Reload <= 0)
 	{
@@ -224,4 +239,17 @@ void Player::AddScore(int scoreDelta)
 		return;
 
 	Score += scoreDelta;
+}
+
+bool Player::AcceptPressed()
+{
+	if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+		return true;
+
+	if (IsGamepadAvailable(0))
+	{
+		return IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
+	}
+
+	return false;
 }

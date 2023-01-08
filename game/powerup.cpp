@@ -52,7 +52,7 @@ bool PowerUp::Collide(const Entity& other)
 
 			case PowerUp::PowerType::Boost:
 				player.Power += World::Instance->PlayerShip.MaxPower / 4.0f;
-				player.BoostMultiplyer += 0.1;
+				player.BoostMultiplyer += 0.1f;
 				player.MaxThrust += player.NominalThrust * 0.25f;
 				break;
 		}

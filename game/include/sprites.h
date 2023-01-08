@@ -39,6 +39,8 @@ namespace Sprites
 	extern size_t BoostPowerup;
 	extern size_t ShotPowerup;
 
+	extern size_t Cursor;
+
 	void Init();
 	void Shutdown();
 
