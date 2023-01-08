@@ -78,7 +78,7 @@ void Player::Update()
 	if (IsGamepadAvailable(0))
 	{
 		wantThrust = wantThrust || GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_TRIGGER) > 0.125f;
-		wantBoost = wantBoost || (IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) && wantThrust > 0);
+		wantBoost = wantBoost || (IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) && wantThrust);
 		wantShoot = wantShoot || GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_TRIGGER) > 0.125f;
 		wantBreak = wantBreak || IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_LEFT);
 	}
@@ -129,7 +129,7 @@ void Player::Update()
 	if (Boost)
 		speed *= BoostMultiplyer;
 
-	if (wantThrust > 0)
+	if (wantThrust)
 	{
 		Velocity = Vector2Add(Velocity, Vector2Scale(shipVector, speed));
 		Thrusting = true;

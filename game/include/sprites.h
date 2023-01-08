@@ -3,6 +3,7 @@
 #include "raylib.h"
 
 #include <vector>
+#include <stdlib.h>
 
 namespace Sprites
 {
@@ -13,6 +14,14 @@ namespace Sprites
 		Rectangle Frame;
 
 		Rectangle Borders = { 0 };
+
+		SpriteFrame() {}
+		SpriteFrame(size_t sheet, float x, float y, float w, float h)
+			: Sheet(sheet)
+			, Frame{ x,y,w,h }
+
+		{
+		}
 	};
 
 	extern std::vector<SpriteFrame> Frames;

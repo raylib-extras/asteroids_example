@@ -212,7 +212,7 @@ void DrawGameHud()
 
 void DrawLevelChangeCountdown()
 {
-	DrawCenteredText(TextFormat("Level Clear, Next Level in %0.0f", std::ceilf(LevelChangeCountdown)), 20, 0.25f);
+	DrawCenteredText(TextFormat("Level Clear, Next Level in %0.0f", (float)std::ceil(LevelChangeCountdown)), 20, 0.25f);
 }
 
 void DrawGameOver()

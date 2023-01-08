@@ -37,7 +37,7 @@ namespace Sprites
 
 	size_t AddFrame(size_t sheetId, float x, float y, float w, float h)
 	{
-		Frames.emplace_back(SpriteFrame{ sheetId, Rectangle{x,y,w,h} });
+		Frames.emplace_back(SpriteFrame(sheetId, x,y,w,h));
 		return Frames.size() - 1;
 	}
 
