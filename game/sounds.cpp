@@ -147,6 +147,6 @@ namespace Sounds
 	void PlaySoundEffect(size_t effect)
 	{
 		if (effect <= Effects.size())
-			PlaySoundMulti(Effects[effect]);
+			PlaySound(Effects[effect]);
 	}
 }
