@@ -47,6 +47,7 @@ void DrawOverlay();
 inline bool IsPaused() { return GameState == GameStates::Paused; }
 
 Vector2 GetDisplaySize();
+Vector2 GetRenderSize();
 void ToggleFullscreenState();
 void CenterWindow();
 

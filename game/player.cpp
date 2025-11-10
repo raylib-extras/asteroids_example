@@ -33,6 +33,8 @@
 #include "sounds.h"
 #include "game.h"
 
+#include "raymath.h"
+
 constexpr float BaseReloadTime = 0.5f;
 constexpr float ShieldHitMaxLife = 0.35f;
 constexpr float BreakingFriction = 0.025f;
@@ -120,7 +122,15 @@ void Player::Update()
 	// handle rotation by mouse,keyboard, or gamepad
 	if (Vector2LengthSqr(GetMouseDelta()) > 0)
 	{
-		Vector2 mouseVec = Vector2Normalize(Vector2Subtract(GetMousePosition(), Vector2Scale(GetDisplaySize(), 0.5f)));
+		auto mousePos = GetMousePosition();
+		auto center = Vector2Scale(GetDisplaySize(), 0.5f);
+
+		Vector2 mouseVec = Vector2Normalize(Vector2Subtract(mousePos, center));
+
+		if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+		{
+			int j = 9;
+		}
 
 		if (Vector2LengthSqr(mouseVec) > 0)
 		{

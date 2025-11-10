@@ -46,7 +46,7 @@ Texture Background = { 0 };	// texture to use for the background image
 int main ()
 {
 	// set up the window
-	SetConfigFlags(FLAG_VSYNC_HINT);
+	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 	InitWindow(WindowWidth, WindowHeight, "Fasteroids++");
 	CenterWindow();
 	SetFPSCap();
@@ -93,7 +93,7 @@ int main ()
 			ToggleFullscreenState();
 			
 		// update the world camera
-		Vector2 center = Vector2Scale(GetDisplaySize(), 0.5f);
+		Vector2 center = Vector2Scale(GetRenderSize(), 0.5f);
 		worldCamera.offset = center;
 
 		if (IsKeyDown(KEY_EQUAL))

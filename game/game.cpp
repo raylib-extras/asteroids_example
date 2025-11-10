@@ -55,6 +55,12 @@ Vector2 GetDisplaySize()
 		return Vector2{ (float)GetScreenWidth(), (float)GetScreenHeight() };
 }
 
+
+Vector2 GetRenderSize()
+{
+	return Vector2{ (float)GetRenderWidth(), (float)GetRenderHeight() };
+}
+
 void ToggleFullscreenState()
 {
 	if (IsWindowFullscreen())
@@ -169,7 +175,7 @@ void DrawMiniMap()
 
 	float rad = center.x * 0.5f - 10;
 
-	center.x = GetDisplaySize().x - (center.x / 2.0f);
+	center.x = GetRenderSize().x - (center.x / 2.0f);
 	center.y = center.y / 2.0f;
 
 	DrawCircleV(center, rad, ColorAlpha(BLACK, 0.75f));
@@ -204,7 +210,7 @@ void DrawMiniMap()
 		DrawCircleV(relPos, 1, PURPLE);
 	}
 
-	Vector2 upperRight = { float(GetDisplaySize().x),0 };
+	Vector2 upperRight = { float(GetRenderSize().x),0 };
 	Sprites::DrawJustfied(Sprites::MiniMapSprite, upperRight, Sprites::Justifications::Max, Sprites::Justifications::Min);
 
 	if (World::Instance->GetActiveAsteroidCount() < 6)
@@ -238,13 +244,13 @@ void DrawGameHud()
 		DrawCenteredText(TextFormat("Asteroids Left : %d", World::Instance->GetActiveAsteroidCount()), 20, 0.125f);
 	}
 
-	float topBarWidth = 222+33;
-	float center = GetDisplaySize().x / 2.0f - topBarWidth / 2.0f;
+	float topBarWidth = (222 + 33);
+	float center = GetRenderSize().x / 2.0f - topBarWidth / 2.0f;
 
 	Sprites::DrawJustfied(Sprites::BoostIcon, Vector2{ center, 3 }, Sprites::Justifications::Min, Sprites::Justifications::Min);
 	Sprites::DrawJustfied(Sprites::ShieldIcon, Vector2{ center, 43 }, Sprites::Justifications::Min, Sprites::Justifications::Min);
 
-	center = GetDisplaySize().x / 2.0f + topBarWidth / 2.0f;
+	center = GetRenderSize().x / 2.0f + topBarWidth / 2.0f;
 
 	float boostFactor = World::Instance->PlayerShip.Power / 1000.0f;
 	float shieldFactor = World::Instance->PlayerShip.Shield / 1000.0f;
