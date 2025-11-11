@@ -3,6 +3,7 @@
 #include "common.h"
 #include "sprites.h"
 #include "sounds.h"
+#include "raymath.h"
 
 constexpr float PowerupRadius = 55;
 
@@ -28,7 +29,7 @@ void PowerUp::Draw() const
 			break;
 	}
 
-	Sprites::Draw(sprite, Position, Orientation);
+	Sprites::Draw(sprite, Position, Orientation, Vector2One() * 21 * 2);
 }
 
 bool PowerUp::Collide(const Entity& other)

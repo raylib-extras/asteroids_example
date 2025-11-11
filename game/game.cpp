@@ -31,7 +31,7 @@
 
 #include <cmath>
 
-constexpr char Version[] = "Ver 0.0.3.Petty_Dragon Copyright 2023 Jeffery Myers";
+constexpr char Version[] = "Ver 0.0.4.Underpants_Nightmare Copyright 2025 Jeffery Myers";
 
 constexpr float LevelChangeTime = 10;
 

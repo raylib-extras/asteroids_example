@@ -69,7 +69,7 @@ int main ()
 
 	// setup the camera for the game world
 	Camera2D worldCamera = { 0 };
-	worldCamera.zoom = 0.5f;
+	worldCamera.zoom = GetWindowScaleDPI().y *  0.5f;
 	
 	// setup world
 	World& world = World::Create();
